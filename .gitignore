@@ -3,3 +3,4 @@
 *.pt
 /activations_matrices
 /fmri_data
+/.idea
