@@ -134,28 +134,28 @@ def generate_correlation_per_clip(subject_list, mode: Mode):
             'avrage_accross_all_subjects',
             f'average_correlation_matrix_{clip}_{mode.value}.csv'), index=False)
 
-
-if __name__ == '__main__':
-    # generate_correlation_per_clip(config.test_list, Mode.CLIPS)
-    # generate_correlation_per_clip(config.test_list, Mode.REST_BETWEEN)
-    # main_pipeline(config.test_list)
-    # create_avg_activation_matrix()
+def total_clip_and_rest_correlation():
     df = pd.read_csv(
         os.path.join(
             config.ACTIVATION_MATRICES,
             'avrage_accross_all_subjects',
             'csvis', 'average_correlation_matrix.csv'), index_col=0)
 
-    rest_cor = df.iloc[len(df)//2:, len(df)//2:]
-    clip_cor = df.iloc[:len(df)//2, :len(df)//2]
+    rest_cor = df.iloc[len(df) // 2:, len(df) // 2:]
+    clip_cor = df.iloc[:len(df) // 2, :len(df) // 2]
     df = pd.DataFrame()
     df_rest = MatricesOperations.drop_symmetric_side_of_a_matrix(rest_cor)
     df_clip = MatricesOperations.drop_symmetric_side_of_a_matrix(clip_cor)
     df['clip'] = df_clip
     df['rest'] = df_rest
 
-    df = df.corr()
+    df_corr = df.corr()
+    return df_corr
 
+if __name__ == '__main__':
+    pass
 
-
-    print()
+    # generate_correlation_per_clip(config.test_list, Mode.CLIPS)
+    # generate_correlation_per_clip(config.test_list, Mode.REST_BETWEEN)
+    # main_pipeline(config.test_list)
+    # create_avg_activation_matrix()

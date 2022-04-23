@@ -1,6 +1,6 @@
 *.pkl
 *.csv
 *.pt
-/activations_matrices
+/activation_matrices
 /fmri_data
 /.idea

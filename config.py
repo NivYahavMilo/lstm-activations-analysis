@@ -2,9 +2,9 @@ import os
 import pandas as pd
 
 ROOT_PATH = os.path.abspath(os.path.curdir)
-MODELS_PATH = os.path.join(ROOT_PATH, 'save_models')
+MODELS_PATH = os.path.join(ROOT_PATH, 'saved_models')
 DATA_PATH = os.path.join(ROOT_PATH, 'data')
-ACTIVATION_MATRICES = os.path.join(DATA_PATH, 'activations_matrices')
+ACTIVATION_MATRICES = os.path.join(DATA_PATH, 'activation_matrices')
 
 TEST_SUBJECTS_AMOUNT = 76
 TRAIN_SUBJECTS_AMOUNT = 100
