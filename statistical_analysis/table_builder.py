@@ -5,20 +5,17 @@ import pandas as pd
 import torch
 
 import config
-from supporting_functions import _load_pkl, _dict_to_pkl
+from supporting_functions import _load_pkl
+from enums import Mode
 from config import idx_to_clip
 
-class Mode(Enum):
-    CLIPS = 'clips'
-    REST = 'rest'
-    REST_BETWEEN = 'rest_between'
 
 class TableBuilder:
 
     def __init__(self, mode: Mode = Mode.CLIPS):
         self.table = None
         self.subjects_mappings_test: dict = _load_pkl(
-            os.path.join(config.DATA_PATH, 'subject_occurrence_mapping.pkl')).get('test')
+            os.path.join(config.MAPPINGS_PATH, 'subject_occurrence_mapping.pkl')).get('test')
         self.activations: torch.Tensor = _load_pkl(
             os.path.join(config.MODELS_PATH, f'{mode.value}_model_activations.pkl')).get('lstm_activations')
         self.mode = mode.value
@@ -30,7 +27,6 @@ class TableBuilder:
         return idx_to_clip.get(reduced_index)
 
     def _attach_activations_per_subject(self, occurrences: list) -> pd.DataFrame:
-
         xp_list = []
         # Create df per subject
         for clip in occurrences:
@@ -50,7 +46,7 @@ class TableBuilder:
         return subject_df
 
     def _create_subject_dir(self, subject: str):
-        subject_dir = os.path.join(config.DATA_PATH, 'activations_matrices', subject)
+        subject_dir = os.path.join(config.ACTIVATION_MATRICES, subject)
         # Open new directory as subjects id
         if not os.path.exists(subject_dir):
             os.makedirs(subject_dir)

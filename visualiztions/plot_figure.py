@@ -3,13 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import seaborn as sn
-
 import config
-
-
-def _load_csv(path):
-    return pd.read_csv(path, index_col=0)
 
 
 def save_matrix_as_image():
@@ -51,4 +45,6 @@ def plot_matrix(matrix: pd.DataFrame, cmap: str = 'hot'):
 
 
 if __name__ == '__main__':
-    save_matrix_as_image()
+    mat = pd.read_csv('activation_matrices/avrage_accross_all_subjects/csvis/average_correlation_matrix_19_tr.csv',
+                      index_col=0)
+    plot_matrix(mat)

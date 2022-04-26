@@ -4,7 +4,7 @@ from matrices_ops import MatricesOperations
 import config
 import os
 import pandas as pd
-from table_builder import Mode
+from enums import Mode
 from math_functions import z_score
 
 
@@ -16,13 +16,13 @@ def _get_subjects_combinations(subjects_list: list, combine: int = 1):
 
 def _load_csv(sub, mode: Mode):
     if len(sub) == 2:
-        sub1 = pd.read_csv(os.path.join(config.DATA_PATH, 'activations_matrices', sub[0], mode.value,
+        sub1 = pd.read_csv(os.path.join(config.ACTIVATION_MATRICES, sub[0], mode.value,
                                         'activation_matrix.csv'))
-        sub2 = pd.read_csv(os.path.join(config.DATA_PATH, 'activations_matrices', sub[1], mode.value,
+        sub2 = pd.read_csv(os.path.join(config.ACTIVATION_MATRICES, sub[1], mode.value,
                                         'activation_matrix.csv'))
         return sub1, sub2
     elif len(sub) == 1:
-        sub = pd.read_csv(os.path.join(config.DATA_PATH, 'activations_matrices', sub[0], mode.value,
+        sub = pd.read_csv(os.path.join(config.ACTIVATION_MATRICES, sub[0], mode.value,
                                        'activation_matrix.csv'))
         return sub
 
@@ -85,7 +85,6 @@ def set_activation_vectors(corr: dict):
 
 
 def main_pipeline(subjects_list):
-    all_cor_mat = []
     for sub in subjects_list:
         # Execute clip pipeline
         corr_: dict = auto_correlation_pipeline(sub, Mode.CLIPS)
@@ -96,16 +95,18 @@ def main_pipeline(subjects_list):
         # Merging clips and rest between data frame
         corr_mat = join_and_auto_correlate(df_clip, df_rest)
         corr_mat.to_csv(
-            os.path.join(config.DATA_PATH, 'activations_matrices', sub, f'correlation_matrix.csv'),
+            os.path.join(config.ACTIVATION_MATRICES, sub, f'correlation_matrix.csv'),
             index_col=list(corr_mat.index))
         print('done', sub, 'saved to csv')
 
 
-def create_avg_activation_matrix():
-    mat_path = os.path.join(config.DATA_PATH, 'activations_matrices')
+def create_avg_activation_matrix(table_name: str):
+    mat_path = config.ACTIVATION_MATRICES
     all_cor_mat = []
     for sub in os.listdir(mat_path):
-        df = pd.read_csv(os.path.join(mat_path, sub, 'correlation_matrix.csv'), index_col=0)
+        if sub == 'avrage_accross_all_subjects':
+            continue
+        df = pd.read_csv(os.path.join(mat_path, sub, f'{table_name}.csv'), index_col=0)
         matrix: np.array = df.values
         all_cor_mat.append(matrix)
 
@@ -113,11 +114,11 @@ def create_avg_activation_matrix():
     avg_mat = pd.DataFrame(avg_mat)
     avg_mat.columns = df.columns
     avg_mat.index = df.index
-    avg_mat.to_csv(os.path.join(mat_path, 'average_correlation_matrix.csv'))
+    avg_mat.to_csv(os.path.join(mat_path, f'average_{table_name}.csv'))
 
 
 def generate_correlation_per_clip(subject_list, mode: Mode):
-    mat_path = os.path.join(config.DATA_PATH, 'activations_matrices')
+    mat_path = config.ACTIVATION_MATRICES
     all_cor_mat = []
     for clip in config.idx_to_clip.values():
         for sub in subject_list:
@@ -139,7 +140,7 @@ def total_clip_and_rest_correlation():
         os.path.join(
             config.ACTIVATION_MATRICES,
             'avrage_accross_all_subjects',
-            'csvis', 'average_correlation_matrix.csv'), index_col=0)
+            'csvis', 'average_correlation_matrix_19_tr.csv'), index_col=0)
 
     rest_cor = df.iloc[len(df) // 2:, len(df) // 2:]
     clip_cor = df.iloc[:len(df) // 2, :len(df) // 2]
@@ -159,3 +160,5 @@ if __name__ == '__main__':
     # generate_correlation_per_clip(config.test_list, Mode.REST_BETWEEN)
     # main_pipeline(config.test_list)
     # create_avg_activation_matrix()
+    df = total_clip_and_rest_correlation()
+    print()
