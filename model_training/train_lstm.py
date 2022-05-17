@@ -15,26 +15,14 @@ from utils import _info
 from cc_utils import _lstm_test_acc
 from dataloader import _get_clip_seq as _get_seq
 from dataloader import _clip_class_df
-from torch_utils import getActivation, activation
 
 K_SEED = 330
 
-def _test(df, args):
-    '''
-    test subject results
-    view only for best cross-val parameters
-    '''
-    _info('test mode')
-
+def train_lstm(df, args):
     # set pytorch device
     torch.manual_seed(K_SEED)
     use_cuda = torch.cuda.is_available()
     args.device = torch.device('cuda:0' if use_cuda else 'cpu')
-    if use_cuda:
-        _info('cuda')
-    else:
-        _info('cpu')
-
     # get X-y from df
     subject_list = df['Subject'].unique()
     train_list = subject_list[:args.train_size]
@@ -116,24 +104,16 @@ def _test(df, args):
     a, a_t, c_mtx = _lstm_test_acc(model, X_test, y_test,
                                    test_len, max_length, clip_time, len(test_list), return_states=False)
 
-    _dict_to_pkl(activation, 'rest_between_model_activations')
-
 
 def main(args):
 
-    res_path = (RES_DIR +
-                '/roi_%d_net_%d' % (args.roi, args.net) +
-                '_nw_%s' % (args.subnet) +
-                '_trainsize_%d' % (args.train_size) +
-                '_kfold_%d_k_hidden_%d' % (args.k_fold, args.k_hidden) +
-                '_k_layers_%d_batch_size_%d' % (args.k_layers, args.batch_size) +
-                '_num_epochs_%d_z_%d_rest_between.pkl' % (args.num_epochs, args.zscore))
+    res_path = ''
     if not os.path.isfile(res_path):
         df = _clip_class_df(args)
         df.to_pickle(os.path.join(config.DATA_PATH,'4_runs_rest_between.pkl'))
     results = {}
     df = pd.read_pickle(os.path.join(config.FMRI_DATA, '4_runs_rest_between.pkl'))
-    results['test_mode'] = _test(df, args)
+    results['test_mode'] = train_lstm(df, args)
     with open(res_path, 'wb') as f:
         pickle.dump(results, f)
 
