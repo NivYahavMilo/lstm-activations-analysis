@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from typing import List
 
 
 class MatricesOperations:
@@ -50,6 +51,6 @@ class MatricesOperations:
 
     @classmethod
     def get_avg_matrix(cls, matrices: iter):
-        matrices: list[np.array] = [mat for mat in matrices]
+        matrices: List[np.array] = [mat for mat in matrices]
         avg_mat: np.array = np.mean(matrices, axis=0)
         return avg_mat
