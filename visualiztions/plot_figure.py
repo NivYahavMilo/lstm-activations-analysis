@@ -24,7 +24,7 @@ def save_matrix_as_image():
         plt.savefig(os.path.join(mat_path, 'images', array.replace('.csv', '.png')))
 
 
-def plot_matrix(matrix: pd.DataFrame, cmap: str = 'hot'):
+def plot_matrix(matrix: pd.DataFrame, title, cmap: str = 'hot'):
     SMALL_SIZE = 4
     MEDIUM_SIZE = 10
     BIGGER_SIZE = 12
@@ -33,18 +33,23 @@ def plot_matrix(matrix: pd.DataFrame, cmap: str = 'hot'):
     plt.rc('axes', titlesize=SMALL_SIZE)  # fontsize of the axes title
     plt.rc('axes', labelsize=SMALL_SIZE)
     # fontsize of the x and y labels
-    plt.rcParams.update({'font.size': 4, 'xtick.labelsize': 2, 'ytick.labelsize': 6})
+    plt.rcParams.update({'font.size': 6, 'xtick.labelsize': 6, 'ytick.labelsize': 6})
     plt.figure(figsize=(10, 6))
     plt.pcolor(matrix, cmap=cmap)
     plt.colorbar()
-    labels = [lab.replace('_between', '') for lab in matrix.columns]
+    plt.title(title, fontdict={"fontsize": "16"})
+    labels = [lab.replace('_between', '') for lab in matrix.columns if isinstance(lab, str)]
     plt.yticks(np.arange(0.5, len(matrix.index), 1), labels)
-    plt.xticks(np.arange(0.5, len(matrix.columns), 1), labels)
+    plt.xticks(np.arange(0.5, len(matrix.columns), 1), labels, rotation=70)
     plt.show()
     print()
 
 
 if __name__ == '__main__':
-    mat = pd.read_csv('activation_matrices/avrage_accross_all_subjects/csvis/average_correlation_matrix_19_tr.csv',
+    mat = pd.read_csv('average_correlation_matrix.csv',
                       index_col=0)
-    plot_matrix(mat)
+    mat1 = pd.read_csv('avg_connectivity_300roi.csv',
+                      index_col=0)
+
+    plot_matrix(mat, title="activations_300roi")
+    plot_matrix(mat1, title="connectivity_300roi")

@@ -1,6 +1,7 @@
 import os
 import pandas as pd
 
+
 ROOT_PATH = os.path.abspath(os.path.curdir)
 MODELS_PATH = os.path.join(ROOT_PATH, 'saved_models')
 ACTIVATION_MATRICES = os.path.join(ROOT_PATH, 'activation_matrices')
@@ -8,6 +9,7 @@ FMRI_DATA = os.path.join(ROOT_PATH, 'fmri_data')
 FMRI_DATA_NETWORKS = os.path.join(ROOT_PATH, 'fmri_data', 'networks_df')
 CONNECTIVITY_FOLDER = os.path.join(ROOT_PATH, 'fmri_connectivity_matrices')
 MAPPINGS_PATH = os.path.join(ROOT_PATH, 'mappings')
+CORRELATION_MATRIX = os.path.join(ROOT_PATH, 'correlation_matrix')
 
 TEST_SUBJECTS_AMOUNT = 76
 TRAIN_SUBJECTS_AMOUNT = 100
@@ -55,10 +57,9 @@ train_size = 100
 def config_data():
     df = pd.read_pickle(os.path.join(FMRI_DATA, '4_runs_rest_between.pkl'))
     subject_list = df['Subject'].astype(str).unique()
-    clip_names_ = list(df['y'].unique())
     sub_train_list_ = subject_list[:train_size]
     sub_test_list_ = subject_list[train_size:]
-    return clip_names_, sub_train_list_, sub_test_list_
+    return sub_train_list_, sub_test_list_
 
 
-clip_names, sub_train_list, sub_test_list = config_data()
+sub_train_list, sub_test_list = config_data()

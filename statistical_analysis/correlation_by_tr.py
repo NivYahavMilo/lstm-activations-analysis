@@ -11,7 +11,7 @@ from statistical_analysis.table_builder import Mode
 from supporting_functions import _load_csv
 
 
-def get_custom_tr_clip(mat_clip: pd.DataFrame, length: int = 19, window: str = 'last', tr_range: tuple = ()):
+def get_window_tr_clip(mat_clip: pd.DataFrame, length: int = 19, window: str = 'last', tr_range: tuple = ()):
     # getting interest indices
     if window == 'last':
         stop = int(max(mat_clip['tr'].values))
@@ -37,7 +37,7 @@ def auto_correlation_pipeline_custom_tr(subject: str, mode: Mode):
     for clip in list(sub['y'].unique()):
         # Drop all columns unrelated to activation values
         mat = sub[sub['y'] == clip]
-        mat_pruned = get_custom_tr_clip(mat, window='first')
+        mat_pruned = get_window_tr_clip(mat, window='first')
         mat_pruned = mat_pruned.drop(['y', 'tr'], axis=1)
         # normalize matrix values with z-score
         mat_zscore = mat_pruned.apply(lambda x: z_score(x))
@@ -48,7 +48,38 @@ def auto_correlation_pipeline_custom_tr(subject: str, mode: Mode):
     return corr_per_clip
 
 
-def main_correlation_tr_pipeline(sub_list):
+def get_single_tr(mat_clip: pd.DataFrame, clip_name: str, tr_pos: int = -1):
+    if tr_pos == -1:
+        xdf = mat_clip[mat_clip['y'] == clip_name]
+        tr_pos = int(max(xdf['tr'].values))
+    activation_series = mat_clip[(mat_clip['tr'] == tr_pos) & (mat_clip['y'] == clip_name)]
+    activation_series = activation_series.drop(['y', 'tr'], axis=1)
+    return activation_series
+
+
+def avg_single_tr_vectors(sub_list, mode: Mode, clip):
+    clip_per_subs = []
+    for sub in sub_list:
+        # Execute clip pipeline
+        sub_matrix = pd.read_csv(
+            os.path.join(config.ACTIVATION_MATRICES, sub, mode.value, 'activation_matrix.csv'))
+        activation_vec = get_single_tr(sub_matrix, clip)
+        clip_per_subs.append(activation_vec)
+    avg_series = MatricesOperations.get_avg_matrix((clip.values for clip in clip_per_subs))
+    return avg_series
+
+
+def compare_cliptorest_single_tr():
+    avg_series_per_clip = {}
+    for clip in config.idx_to_clip.values():
+        clip_vec = avg_single_tr_vectors(config.sub_test_list, Mode.CLIPS, clip)
+        rest_vec = avg_single_tr_vectors(config.sub_test_list, Mode.REST_BETWEEN, clip)
+        avg_series_per_clip[clip + '_' + Mode.CLIPS.value] = clip_vec.tolist()[0]
+        avg_series_per_clip[clip + '_' + Mode.REST_BETWEEN.value] = rest_vec.tolist()[0]
+    return pd.DataFrame.from_dict(avg_series_per_clip)
+
+
+def compare_cliptime_window_to_rest_between(sub_list):
     for sub in sub_list:
         # Execute clip pipeline
         corr_dict = auto_correlation_pipeline_custom_tr(sub, Mode.CLIPS)
@@ -63,7 +94,14 @@ def main_correlation_tr_pipeline(sub_list):
         print('done', sub, 'saved to csv')
 
 
-if __name__ == '__main__':
-    #main_correlation_tr_pipeline(config.sub_test_list)
+def corr_pipe_single_tr():
+    last_tr_mat = compare_cliptorest_single_tr()
+    last_tr_mat = last_tr_mat.apply(lambda x: z_score(x))
+    last_tr_corr = MatricesOperations.auto_correlation_matrix(last_tr_mat)
+    last_tr_corr.to_csv('last_tr_hidden_state_correlation.csv')
 
-    create_avg_activation_matrix('correlation_matrix_first_19_tr')
+if __name__ == '__main__':
+    # main_correlation_tr_pipeline(config.sub_test_list)
+    # create_avg_activation_matrix('correlation_matrix_first_19_tr')
+
+    corr_pipe_single_tr()

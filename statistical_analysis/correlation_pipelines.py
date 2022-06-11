@@ -1,11 +1,13 @@
 import itertools
 import numpy as np
-from matrices_ops import MatricesOperations
+from statistical_analysis.matrices_ops import MatricesOperations
+from statistical_analysis.math_functions import z_score
+from mappings.re_arranging import rearrange_clips
 import config
 import os
 import pandas as pd
 from enums import Mode
-from math_functions import z_score
+from visualiztions.plot_figure import plot_matrix
 
 
 def _get_subjects_combinations(subjects_list: list, combine: int = 1):
@@ -94,9 +96,10 @@ def main_pipeline(subjects_list):
         df_rest: pd.DataFrame = set_activation_vectors(corr_)
         # Merging clips and rest between data frame
         corr_mat = join_and_auto_correlate(df_clip, df_rest)
+        corr_mat = rearrange_clips(corr_mat, where='rows', with_testretest=False)
+        corr_mat = rearrange_clips(corr_mat, where='columns', with_testretest=False)
         corr_mat.to_csv(
-            os.path.join(config.ACTIVATION_MATRICES, sub, f'correlation_matrix.csv'),
-            index_col=list(corr_mat.index))
+            os.path.join(config.ACTIVATION_MATRICES, sub, f'correlation_matrix.csv'))
         print('done', sub, 'saved to csv')
 
 
@@ -104,8 +107,6 @@ def create_avg_activation_matrix(table_name: str):
     mat_path = config.ACTIVATION_MATRICES
     all_cor_mat = []
     for sub in os.listdir(mat_path):
-        if sub == 'avrage_accross_all_subjects':
-            continue
         df = pd.read_csv(os.path.join(mat_path, sub, f'{table_name}.csv'), index_col=0)
         matrix: np.array = df.values
         all_cor_mat.append(matrix)
@@ -115,6 +116,7 @@ def create_avg_activation_matrix(table_name: str):
     avg_mat.columns = df.columns
     avg_mat.index = df.index
     avg_mat.to_csv(os.path.join(mat_path, f'average_{table_name}.csv'))
+    plot_matrix(avg_mat, title='activations_300roi no test-re-test')
 
 
 def generate_correlation_per_clip(subject_list, mode: Mode):
@@ -131,16 +133,14 @@ def generate_correlation_per_clip(subject_list, mode: Mode):
             (mat for mat in all_cor_mat))
         avg_mat = pd.DataFrame(avg_mat)
         avg_mat.to_csv(os.path.join(
-            mat_path,
-            'avrage_accross_all_subjects',
+            config.CORRELATION_MATRIX,
             f'average_correlation_matrix_{clip}_{mode.value}.csv'), index=False)
 
 
 def total_clip_and_rest_correlation(table_name: str):
     df = pd.read_csv(
         os.path.join(
-            config.ACTIVATION_MATRICES,
-            'avrage_accross_all_subjects',
+            config.CORRELATION_MATRIX,
             'csvis', f'{table_name}.csv'), index_col=0)
 
     rest_cor = df.iloc[len(df) // 2:, len(df) // 2:]
@@ -156,11 +156,10 @@ def total_clip_and_rest_correlation(table_name: str):
 
 
 if __name__ == '__main__':
-    pass
-
     # generate_correlation_per_clip(config.test_list, Mode.CLIPS)
     # generate_correlation_per_clip(config.test_list, Mode.REST_BETWEEN)
-    # main_pipeline(config.test_list)
-    # create_avg_activation_matrix()
-    df = total_clip_and_rest_correlation(table_name='average_correlation_matrix_first_19_tr')
+    main_pipeline(config.sub_test_list)
+    create_avg_activation_matrix('correlation_matrix')
+
+    # df = total_clip_and_rest_correlation(table_name='avg_connectivity_300roi.csv')
     print()
