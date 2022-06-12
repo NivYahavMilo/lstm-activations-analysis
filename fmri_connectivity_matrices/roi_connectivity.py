@@ -65,7 +65,7 @@ class RoiConnectivity:
 
 
 if __name__ == '__main__':
-    # roi = RoiConnectivity()
-    # roi.pipe()
-    avg_conn_mat = pd.read_csv("avg_connectivity_300roi_notesetretest.csv", index_col=0)
-    plot_matrix(pd.DataFrame(avg_conn_mat), title="avg_connectivity_300roi no test-re-test")
+    roi = RoiConnectivity()
+    roi.pipe()
+    #avg_conn_mat = pd.read_csv("avg_connectivity_300roi_notesetretest.csv", index_col=0)
+    #plot_matrix(pd.DataFrame(avg_conn_mat), title="avg_connectivity_300roi no test-re-test")

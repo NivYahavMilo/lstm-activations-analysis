@@ -3,6 +3,7 @@ import config
 from supporting_functions import _load_pkl
 import pandas as pd
 import torch
+from enums import Mode
 
 def attach_activations_to_its_subject(activation:dict, layer: str, subjects_list: list):
     acts: torch.Tensor = activation.get(f"{layer}_activations")
@@ -24,6 +25,6 @@ def attach_activations_to_its_subject(activation:dict, layer: str, subjects_list
 
 
 if __name__ == '__main__':
-    activations_: dict = _load_pkl(os.path.join(config.MODELS_PATH, 'clip_model_activations.pkl'))
-    subject_lst = pd.read_pickle(os.path.join(config.DATA_PATH, '4_movie_runs.pkl'))['Subject'].unique()[100:].tolist()
+    activations_: dict = _load_pkl(os.path.join(config.MODELS_PATH, 'clips_model_activations.pkl'))
+    subject_lst = pd.read_pickle(os.path.join(config.FMRI_DATA, '4_movie_runs.pkl'))['Subject'].unique()[100:].tolist()
     attach_activations_to_its_subject(activations_, 'lstm', subject_lst)

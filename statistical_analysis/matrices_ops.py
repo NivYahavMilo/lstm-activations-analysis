@@ -50,7 +50,7 @@ class MatricesOperations:
         pass
 
     @classmethod
-    def get_avg_matrix(cls, matrices: iter):
+    def get_avg_matrix(cls, matrices: iter, axis: int = 0):
         matrices: List[np.array] = [mat for mat in matrices]
-        avg_mat: np.array = np.mean(matrices, axis=0)
+        avg_mat: np.array = np.mean(matrices, axis=axis)
         return avg_mat

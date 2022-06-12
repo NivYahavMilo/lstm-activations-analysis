@@ -1,5 +1,4 @@
 import os
-from enum import Enum
 
 import pandas as pd
 import torch
@@ -68,6 +67,8 @@ class TableBuilder:
 
 if __name__ == '__main__':
     table_builder = TableBuilder(Mode.CLIPS)
+    table_builder.subject_tables_forming()
+    table_builder = TableBuilder(Mode.REST_BETWEEN)
     table_builder.subject_tables_forming()
 
 

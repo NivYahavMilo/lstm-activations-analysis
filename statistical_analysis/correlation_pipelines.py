@@ -99,7 +99,7 @@ def main_pipeline(subjects_list):
         corr_mat = rearrange_clips(corr_mat, where='rows', with_testretest=False)
         corr_mat = rearrange_clips(corr_mat, where='columns', with_testretest=False)
         corr_mat.to_csv(
-            os.path.join(config.ACTIVATION_MATRICES, sub, f'correlation_matrix.csv'))
+            os.path.join(config.ACTIVATION_MATRICES, sub, f'corr_mat.csv'))
         print('done', sub, 'saved to csv')
 
 
@@ -158,8 +158,8 @@ def total_clip_and_rest_correlation(table_name: str):
 if __name__ == '__main__':
     # generate_correlation_per_clip(config.test_list, Mode.CLIPS)
     # generate_correlation_per_clip(config.test_list, Mode.REST_BETWEEN)
-    main_pipeline(config.sub_test_list)
-    create_avg_activation_matrix('correlation_matrix')
+    #main_pipeline(config.sub_test_list)
+    create_avg_activation_matrix('corr_mat')
 
     # df = total_clip_and_rest_correlation(table_name='avg_connectivity_300roi.csv')
     print()
