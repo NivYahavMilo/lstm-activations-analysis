@@ -2,5 +2,4 @@
 *.csv
 *.pt
 /activation_matrices
-/fmri_data
 /.idea

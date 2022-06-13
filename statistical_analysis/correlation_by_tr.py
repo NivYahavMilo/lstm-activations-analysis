@@ -3,12 +3,14 @@ import pandas as pd
 import numpy as np
 
 import config
+from mappings.re_arranging import rearrange_clips
 from statistical_analysis.correlation_pipelines import set_activation_vectors, auto_correlation_pipeline, \
     join_and_auto_correlate, create_avg_activation_matrix
 from statistical_analysis.math_functions import z_score
 from statistical_analysis.matrices_ops import MatricesOperations
 from statistical_analysis.table_builder import Mode
 from supporting_functions import _load_csv
+from visualiztions.plot_figure import plot_matrix
 
 
 def get_window_tr_clip(mat_clip: pd.DataFrame, length: int = 19, window: str = 'last', tr_range: tuple = ()):
@@ -90,18 +92,29 @@ def compare_cliptime_window_to_rest_between(sub_list):
         # Merging clips and rest between data frame
         corr_mat = join_and_auto_correlate(df_clip, df_rest)
         corr_mat.to_csv(
-            os.path.join(config.ACTIVATION_MATRICES, sub, f'correlation_matrix_first_19_tr.csv'))
+            os.path.join(config.ACTIVATION_MATRICES, sub, f'corr_mat_first_19_tr.csv'))
         print('done', sub, 'saved to csv')
 
 
-def corr_pipe_single_tr():
+def corr_pipe_single_tr(table_name, re_test: bool = False):
     last_tr_mat = compare_cliptorest_single_tr()
     last_tr_mat = last_tr_mat.apply(lambda x: z_score(x))
     last_tr_corr = MatricesOperations.auto_correlation_matrix(last_tr_mat)
-    last_tr_corr.to_csv('last_tr_hidden_state_correlation.csv')
+    last_tr_corr = rearrange_clips(last_tr_corr, where='rows', with_testretest=re_test)
+    last_tr_corr = rearrange_clips(last_tr_corr, where='columns', with_testretest=re_test)
+    last_tr_corr.to_csv(f'{table_name}.csv')
 
 if __name__ == '__main__':
     # main_correlation_tr_pipeline(config.sub_test_list)
     # create_avg_activation_matrix('correlation_matrix_first_19_tr')
+    table = 'last tr corr with test re-test'
+    corr_pipe_single_tr(table, re_test=True)
 
-    corr_pipe_single_tr()
+    mat = pd.read_csv(f'{table}.csv', index_col=0)
+    plot_matrix(mat, table)
+
+    table = 'last tr corr without test re-test'
+    corr_pipe_single_tr(table, re_test=False)
+
+    mat = pd.read_csv(f'{table}.csv', index_col=0)
+    plot_matrix(mat, table)

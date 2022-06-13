@@ -6,23 +6,33 @@ import os
 import time
 
 import config
+from enums import Mode
+from model_training.hyperparameters import HyperParams
 from supporting_functions import _dict_to_pkl
 import torch
 import torch.nn as nn
 from models import LSTMClassifier
 
-from utils import _info
 from cc_utils import _lstm_test_acc
 from dataloader import _get_clip_seq as _get_seq
-from dataloader import _clip_class_df
 
 K_SEED = 330
 
-def train_lstm(df, args):
+
+def _test(df, args):
+    '''
+    test subject results
+    view only for best cross-val parameters
+    '''
     # set pytorch device
     torch.manual_seed(K_SEED)
     use_cuda = torch.cuda.is_available()
     args.device = torch.device('cuda:0' if use_cuda else 'cpu')
+    if use_cuda:
+        print('cuda')
+    else:
+        print('cpu')
+
     # get X-y from df
     subject_list = df['Subject'].unique()
     train_list = subject_list[:args.train_size]
@@ -38,7 +48,7 @@ def train_lstm(df, args):
         class_df = df[df['y'] == ii]
         clip_time[ii] = np.max(np.unique(class_df['timepoint'])) + 1
     clip_time = clip_time.astype(int)  # df saves float
-    _info('seq lengths = %s' % clip_time)
+    print('seq lengths = %s' % clip_time)
 
     # results dict init
     results = {}
@@ -60,6 +70,7 @@ def train_lstm(df, args):
     '''
     model = LSTMClassifier(k_feat, args.k_hidden,
                            args.k_layers, args.k_class)
+    model.fc.register_forward_hook(model.hook)
     model.to(args.device)
     print(model)
 
@@ -67,56 +78,70 @@ def train_lstm(df, args):
     # if input is cuda, loss function is auto cuda
     opt = torch.optim.Adam(model.parameters())
 
-    # get train, val sequences
+    # get train, test sequences
     X_train, train_len, y_train = _get_seq(df,
                                            train_list, args)
     X_test, test_len, y_test = _get_seq(df,
                                         test_list, args)
 
     max_length = torch.max(train_len)
+    '''
+    train classifier
+    '''
     permutation = torch.randperm(X_train.size()[0])
     losses = np.zeros(args.num_epochs)
     #
     then = time.time()
-    if not args.inference:
-        for epoch in range(args.num_epochs):
-            for i in range(0, X_train.size()[0], args.batch_size):
-                indices = permutation[i:i + args.batch_size]
-                batch_x, batch_y = X_train[indices], y_train[indices]
-                batch_x_len = train_len[indices]
 
-                y_pred = model(batch_x, batch_x_len, max_length)
-                loss = lossfn(y_pred.view(-1, args.k_class),
-                              batch_y.view(-1))
+    for epoch in range(args.num_epochs):
+        for i in range(0, X_train.size()[0], args.batch_size):
+            indices = permutation[i:i + args.batch_size]
+            batch_x, batch_y = X_train[indices], y_train[indices]
+            batch_x_len = train_len[indices]
 
-                opt.zero_grad()
-                loss.backward()
-                opt.step()
+            y_pred = model(batch_x, batch_x_len, max_length)
+            loss = lossfn(y_pred.view(-1, args.k_class),
+                          batch_y.view(-1))
 
-    torch.save(model, os.path.join(config.MODELS_PATH, 'rest_between_model.pt'))
-    # torch.save(model.state_dict(), 'model_state_dict.pt')
+            opt.zero_grad()
+            loss.backward()
+            opt.step()
+        print(epoch)
 
-    if args.inference:
-        model = torch.load('model.pt')
+        losses[epoch] = loss
+
+    print(losses)
+    print('--- train time =  %0.4f seconds ---' % (time.time() - then))
     '''
     results on test data
     '''
     a, a_t, c_mtx = _lstm_test_acc(model, X_test, y_test,
-                                   test_len, max_length, clip_time, len(test_list), return_states=False)
+                                   test_len, max_length, clip_time, len(test_list), args)
+    results['test'] = a
+    print('sacc = %0.3f' % np.mean(a))
+    for ii in range(args.k_class):
+        results['t_test'][ii] = a_t[ii]
+    results['test_conf_mtx'] = c_mtx
+
+    return results
 
 
-def main(args):
+def run(args):
 
-    res_path = ''
-    if not os.path.isfile(res_path):
-        df = _clip_class_df(args)
-        df.to_pickle(os.path.join(config.DATA_PATH,'4_runs_rest_between.pkl'))
-    results = {}
-    df = pd.read_pickle(os.path.join(config.FMRI_DATA, '4_runs_rest_between.pkl'))
-    results['test_mode'] = train_lstm(df, args)
-    with open(res_path, 'wb') as f:
-        pickle.dump(results, f)
+    nets_path = os.path.join(config.FMRI_DATA_NETWORKS, Mode.CLIPS.value)
+    networks = os.listdir(nets_path)
+    for net in networks:
+        args.net = net.replace('df', '').replace('.pkl', '')
+        res_path = f'{net} {Mode.CLIPS.value}.pkl'
+        df = pd.read_pickle(os.path.join(config.FMRI_DATA_NETWORKS,
+                                         Mode.CLIPS.value, net))
+        results = {}
+        results['test_mode'] = _test(df, args)
+        with open(res_path, 'wb') as f:
+            pickle.dump(results, f)
 
 
 if __name__ == '__main__':
+    hp = HyperParams()
+    run(hp)
     pass
