@@ -4,12 +4,14 @@ import pandas as pd
 
 ROOT_PATH = os.path.abspath(os.path.curdir)
 MODELS_PATH = os.path.join(ROOT_PATH, 'saved_models')
+MODELS_NETWORKS_PATH = os.path.join(ROOT_PATH, 'saved_models', 'networks')
 ACTIVATION_MATRICES = os.path.join(ROOT_PATH, 'activation_matrices')
 FMRI_DATA = os.path.join(ROOT_PATH, 'fmri_data')
 FMRI_DATA_NETWORKS = os.path.join(ROOT_PATH, 'fmri_data', 'networks_df')
 CONNECTIVITY_FOLDER = os.path.join(ROOT_PATH, 'fmri_connectivity_matrices')
 MAPPINGS_PATH = os.path.join(ROOT_PATH, 'mappings')
 CORRELATION_MATRIX = os.path.join(ROOT_PATH, 'correlation_matrix')
+RESULTS_PATH = os.path.join(ROOT_PATH, 'results')
 
 TEST_SUBJECTS_AMOUNT = 76
 TRAIN_SUBJECTS_AMOUNT = 100

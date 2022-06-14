@@ -32,4 +32,4 @@ def _to_cpu(a, clone=True):
         a = a.clone()
     a = a.detach().cpu()
 
-    return
+    return a

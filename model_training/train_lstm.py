@@ -1,4 +1,3 @@
-
 import numpy as np
 import pandas as pd
 import pickle
@@ -106,12 +105,12 @@ def _test(df, args):
             opt.zero_grad()
             loss.backward()
             opt.step()
-        print(epoch)
 
         losses[epoch] = loss
 
     print(losses)
     print('--- train time =  %0.4f seconds ---' % (time.time() - then))
+    torch.save(model, f"{args.net} {args.mode}.pt")
     '''
     results on test data
     '''
@@ -126,22 +125,30 @@ def _test(df, args):
     return results
 
 
-def run(args):
-
-    nets_path = os.path.join(config.FMRI_DATA_NETWORKS, Mode.CLIPS.value)
+def run_net(args):
+    nets_path = os.path.join(config.FMRI_DATA_NETWORKS, args.mode)
     networks = os.listdir(nets_path)
     for net in networks:
         args.net = net.replace('df', '').replace('.pkl', '')
-        res_path = f'{net} {Mode.CLIPS.value}.pkl'
+        res_path = f'results {args.net} {args.mode}.pkl'
+        print(f"start training {args.net} in {args.mode} mode")
         df = pd.read_pickle(os.path.join(config.FMRI_DATA_NETWORKS,
-                                         Mode.CLIPS.value, net))
-        results = {}
-        results['test_mode'] = _test(df, args)
+                                         args.mode, net))
+        results = {'test_mode': _test(df, args)}
         with open(res_path, 'wb') as f:
             pickle.dump(results, f)
+
+def run(args):
+    df = pd.read_pickle(os.path.join(config.FMRI_DATA,
+                                     f"4_runs_{args.mode}.pkl"))
+    res_path = os.path.join(config.RESULTS_PATH, f'300 roi {args.mode} results')
+    results = {'test_mode': _test(df, args)}
+    with open(res_path, 'wb') as f:
+        pickle.dump(results, f)
 
 
 if __name__ == '__main__':
     hp = HyperParams()
-    run(hp)
+    hp.mode = Mode.REST_BETWEEN.value
+    run_net(hp)
     pass

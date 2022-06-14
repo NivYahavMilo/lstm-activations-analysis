@@ -5,6 +5,7 @@ import pandas as pd
 
 import config
 from enums import Mode
+from mappings.re_arranging import rearrange_clips
 from statistical_analysis.correlation_pipelines import set_activation_vectors, join_and_auto_correlate
 from statistical_analysis.math_functions import z_score
 from statistical_analysis.matrices_ops import MatricesOperations
@@ -24,7 +25,7 @@ class RoiConnectivity:
     def auto_corr(self, sub, mode:Mode):
         corr_per_clip = {}
         for clip in list(sub['y'].unique()):
-            if clip == 0:
+            if clip==0:
                 continue
             # Drop all columns unrelated to activation values
             mat = sub[sub['y'] == clip].drop(['y', 'timepoint', 'Subject'], axis=1)
@@ -37,7 +38,7 @@ class RoiConnectivity:
             corr_per_clip[f"{clip_name}_{mode.value}"] = pearson_corr
         return corr_per_clip
 
-    def pipe(self):
+    def pipe(self, table_name, re_test: bool = False):
         corr_mat = []
         for sub_ in self.test_subjects:
             sub_clip = self.data[Mode.CLIPS].copy()
@@ -59,13 +60,19 @@ class RoiConnectivity:
         avg_conn_mat = pd.DataFrame(MatricesOperations.get_avg_matrix(iter(corr_mat)))
         avg_conn_mat.columns = headers
         avg_conn_mat.index = headers
-        avg_conn_mat.to_csv("avg_connectivity_300roi_notesetretest.csv")
-        plot_matrix(pd.DataFrame(avg_conn_mat), title="avg_connectivity_300roi")
+
+        rearrange_clips(avg_conn_mat, where='columns', with_testretest=re_test)
+        rearrange_clips(avg_conn_mat, where='rows', with_testretest=re_test)
+        avg_conn_mat.to_csv(f"{table_name}.csv")
+        plot_matrix(pd.DataFrame(avg_conn_mat), title=table_name)
 
 
 
 if __name__ == '__main__':
     roi = RoiConnectivity()
-    roi.pipe()
-    #avg_conn_mat = pd.read_csv("avg_connectivity_300roi_notesetretest.csv", index_col=0)
-    #plot_matrix(pd.DataFrame(avg_conn_mat), title="avg_connectivity_300roi no test-re-test")
+    table = "avg connectivity wb without test-re-test"
+    roi.pipe(table, re_test=False)
+
+    roi = RoiConnectivity()
+    table = "avg connectivity wb with test-re-test"
+    roi.pipe(table, re_test=True)

@@ -74,7 +74,7 @@ def iterate_subs(clip_i, mode):
 
 def average_all_subjects(subjects_signals, clip_i,  test_retest: bool = False, concat_test_retest: bool = False):
     avg_seq = {}
-    clip = config.idx_to_clip.get(clip_i)
+    clip = config.connectivity_mapping.get(clip_i)
     if test_retest:
         all_subjects = {}
         for sub, seqs in subjects_signals.items():
@@ -117,7 +117,9 @@ def plot_signal(signal, clip):
 
         # Enable legend
         ax.legend()
-        ax.set_title("clip signals")
+        ax.set_title("test-re-test")
+        plt.xlabel("TR")
+        plt.ylabel("BOLD")
         plt.show()
     else:
 
@@ -128,7 +130,18 @@ def plot_signal(signal, clip):
         plt.show()
 
 if __name__ == '__main__':
-    avg_signal = iterate_subs(clip_i=6, mode=None)
-    clip_name = config.idx_to_clip.get(6)
+    inception = 5
+    avg_signal = iterate_subs(clip_i=inception, mode=None)
+    clip_name = config.idx_to_clip.get(inception)
+    plot_signal(avg_signal, clip_name)
+
+    pockets = 3
+    avg_signal = iterate_subs(clip_i=pockets, mode=None)
+    clip_name = config.idx_to_clip.get(pockets)
+    plot_signal(avg_signal, clip_name)
+
+    testretest = 0
+    avg_signal = iterate_subs(clip_i=testretest, mode=None)
+    clip_name = config.idx_to_clip.get(testretest)
     plot_signal(avg_signal, clip_name)
     pass

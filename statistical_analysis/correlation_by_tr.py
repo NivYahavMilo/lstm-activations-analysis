@@ -4,8 +4,10 @@ import numpy as np
 
 import config
 from mappings.re_arranging import rearrange_clips
-from statistical_analysis.correlation_pipelines import set_activation_vectors, auto_correlation_pipeline, \
-    join_and_auto_correlate, create_avg_activation_matrix
+from statistical_analysis.correlation_pipelines import (set_activation_vectors,
+                                                        auto_correlation_pipeline,
+                                                        join_and_auto_correlate,
+                                                        total_clip_and_rest_correlation)
 from statistical_analysis.math_functions import z_score
 from statistical_analysis.matrices_ops import MatricesOperations
 from statistical_analysis.table_builder import Mode
@@ -107,14 +109,22 @@ def corr_pipe_single_tr(table_name, re_test: bool = False):
 if __name__ == '__main__':
     # main_correlation_tr_pipeline(config.sub_test_list)
     # create_avg_activation_matrix('correlation_matrix_first_19_tr')
-    table = 'last tr corr with test re-test'
+    table = 'last tr corr wb with test re-test'
     corr_pipe_single_tr(table, re_test=True)
 
     mat = pd.read_csv(f'{table}.csv', index_col=0)
     plot_matrix(mat, table)
 
-    table = 'last tr corr without test re-test'
+    clip_rest_corr = total_clip_and_rest_correlation(table)
+    clip_rest_corr.to_csv('rest-clip corr'+table+'.csv')
+
+    table = 'last tr corr wb without test re-test'
     corr_pipe_single_tr(table, re_test=False)
 
     mat = pd.read_csv(f'{table}.csv', index_col=0)
     plot_matrix(mat, table)
+
+    clip_rest_corr = total_clip_and_rest_correlation(table)
+    clip_rest_corr.to_csv('rest-clip corr'+table+'.csv')
+
+

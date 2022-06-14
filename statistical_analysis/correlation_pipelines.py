@@ -105,10 +105,7 @@ def generate_correlation_per_clip(subject_list, mode: Mode):
 
 
 def total_clip_and_rest_correlation(table_name: str):
-    df = pd.read_csv(
-        os.path.join(
-            config.CORRELATION_MATRIX,
-            f'{table_name}.csv'), index_col=0)
+    df = pd.read_csv(f'{table_name}.csv', index_col=0)
 
     rest_cor = df.iloc[len(df) // 2:, len(df) // 2:]
     clip_cor = df.iloc[:len(df) // 2, :len(df) // 2]
@@ -120,6 +117,7 @@ def total_clip_and_rest_correlation(table_name: str):
 
     df_corr = df.corr()
     return df_corr
+
 
 def main_pipeline(subjects_list, table_name, re_test: bool = False):
     for sub in subjects_list:
@@ -164,9 +162,13 @@ if __name__ == '__main__':
     table = 'corr mat wb without test-re-test'
     main_pipeline(config.sub_test_list, table, re_test=False)
     create_avg_activation_matrix(table)
-    #
+
+    clip_rest_corr = total_clip_and_rest_correlation(f"{config.ACTIVATION_MATRICES}\\avg {table}")
+    clip_rest_corr.to_csv('rest-clip corr'+table+'.csv')
+
     table = 'corr mat wb with test-re-test'
     main_pipeline(config.sub_test_list, table, re_test=True)
     create_avg_activation_matrix(table)
 
-    # df = total_clip_and_rest_correlation(table_name='avg_connectivity_300roi.csv')
+    clip_rest_corr = total_clip_and_rest_correlation(f"{config.ACTIVATION_MATRICES}\\avg {table}")
+    clip_rest_corr.to_csv('rest-clip corr'+table+'.csv')

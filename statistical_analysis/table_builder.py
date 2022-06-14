@@ -56,7 +56,17 @@ class TableBuilder:
 
         return subject_mode_dir
 
-    def subject_tables_forming(self):
+    @classmethod
+    def subject_tables_forming_wb(self):
+        for subject,occurrence in self.subjects_mappings_test.items():
+            subjects_dir = self._create_subject_dir(str(subject))
+            subject_df = self._attach_activations_per_subject(occurrence)
+
+            # save subject df
+            subject_df.to_csv(os.path.join(subjects_dir, 'activation_matrix.csv'), index=False)
+
+    @classmethod
+    def subject_tables_forming_networks(self):
         for subject,occurrence in self.subjects_mappings_test.items():
             subjects_dir = self._create_subject_dir(str(subject))
             subject_df = self._attach_activations_per_subject(occurrence)

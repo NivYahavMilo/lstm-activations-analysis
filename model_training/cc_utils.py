@@ -1,13 +1,16 @@
 '''
 utils for clip classification (cc)
 '''
+import os
+
 import numpy as np
 import pandas as pd
 import torch
 
 from sklearn.metrics import confusion_matrix
 
-from supporting_functions import _dict_to_pkl
+import config
+from supporting_functions import _dict_to_pkl, _load_pkl
 from torch_utils import _to_cpu
 
 K_RUNS = 4  # number of runs for each subject
@@ -87,7 +90,9 @@ def _lstm_test_acc(model, X, y, X_len, max_length,
     else:
         outputs = model(X, X_len, max_length)
 
-    _dict_to_pkl(model.hidden_activations.get('lstm_activations'), args.net)
+    # save predicted activations
+    _dict_to_pkl(model.hidden_activations,
+                 os.path.join(config.MODELS_NETWORKS_PATH, f'{args.net} {args.mode} activations'))
 
     # logits to labels
     _, y_hat = torch.max(outputs, 2)
