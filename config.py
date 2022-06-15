@@ -4,7 +4,8 @@ import pandas as pd
 
 ROOT_PATH = os.path.abspath(os.path.curdir)
 MODELS_PATH = os.path.join(ROOT_PATH, 'saved_models')
-MODELS_NETWORKS_PATH = os.path.join(ROOT_PATH, 'saved_models', 'networks')
+MODELS_NETWORKS_PATH = os.path.join(ROOT_PATH, 'saved_models', 'networks', 'models')
+ACTIVATIONS_NETWORKS_PATH = os.path.join(ROOT_PATH, 'saved_models', 'networks', 'activations')
 ACTIVATION_MATRICES = os.path.join(ROOT_PATH, 'activation_matrices')
 FMRI_DATA = os.path.join(ROOT_PATH, 'fmri_data')
 FMRI_DATA_NETWORKS = os.path.join(ROOT_PATH, 'fmri_data', 'networks_df')
