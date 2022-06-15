@@ -1,41 +1,34 @@
-import itertools
+import os
+
+import config
+
 import numpy as np
+import pandas as pd
+
 from statistical_analysis.matrices_ops import MatricesOperations
 from statistical_analysis.math_functions import z_score
 from mappings.re_arranging import rearrange_clips
-import config
-import os
-import pandas as pd
-from enums import Mode
+from enums import Mode, Network
 from visualiztions.plot_figure import plot_matrix
 
 
-def _get_subjects_combinations(subjects_list: list, combine: int = 1):
-    # Form all possible correlation combinations
-    subjects_list = [*itertools.combinations(subjects_list, combine)]
-    return subjects_list
+def _load_csv(sub: str, mode: Mode, net: Network = None):
+    if net:
+        path = os.path.join(config.ACTIVATION_MATRICES, sub, mode.value, net.value, 'activation_matrix.csv')
+    else:
+        path = os.path.join(config.ACTIVATION_MATRICES, sub, mode.value, 'activation_matrix.csv')
+
+    sub = pd.read_csv(path)
+    return sub
 
 
-def _load_csv(sub, mode: Mode):
-    if len(sub) == 2:
-        sub1 = pd.read_csv(os.path.join(config.ACTIVATION_MATRICES, sub[0], mode.value,
-                                        'activation_matrix.csv'))
-        sub2 = pd.read_csv(os.path.join(config.ACTIVATION_MATRICES, sub[1], mode.value,
-                                        'activation_matrix.csv'))
-        return sub1, sub2
-    elif len(sub) == 1:
-        sub = pd.read_csv(os.path.join(config.ACTIVATION_MATRICES, sub[0], mode.value,
-                                       'activation_matrix.csv'))
-        return sub
-
-
-def auto_correlation_pipeline(subject: str, mode: Mode):
+def auto_correlation_pipeline(subject: str, mode: Mode, net: Network):
     """
     function performing auto-correlation for a single subject activation matrix.
     returns a data frame which its columns is flattened matrix represents the correlation for each clip
     """
     corr_per_clip = {}
-    sub = _load_csv([subject], mode)
+    sub = _load_csv(subject, mode, net)
     for clip in list(sub['y'].unique()):
         # Drop all columns unrelated to activation values
         mat = sub[sub['y'] == clip].drop(['y', 'tr'], axis=1)
@@ -54,27 +47,6 @@ def join_and_auto_correlate(df1: pd.DataFrame, df2: pd.DataFrame):
     pearson_corr = MatricesOperations.auto_correlation_matrix(
         matrix=clips_vectors_z)
     return pearson_corr
-
-
-def cross_correlation_pipeline(subject_list):
-    corr_per_clip = {}
-    subs = _get_subjects_combinations(subject_list)
-    # Load a pair
-    for sub in subs:
-        # Iterate over clips
-        sub1, sub2 = _load_csv(sub, mode=Mode.CLIPS)
-        for clip in list(sub1['y'].unique()):
-            # Drop all columns unrelated to activation values
-            mat1 = sub1[sub1['y'] == clip].drop(['y', 'tr'], axis=1)
-            mat2 = sub2[sub2['y'] == clip].drop(['y', 'tr'], axis=1)
-            # Calculate Pearson correlation
-            pearson_corr = MatricesOperations.cross_correlation_matrix(
-                matrix1=mat1,
-                matrix2=mat2)
-
-            corr_per_clip[clip] = pearson_corr
-    return corr_per_clip
-
 
 def set_activation_vectors(corr: dict):
     clip_activations = pd.DataFrame()
@@ -119,21 +91,20 @@ def total_clip_and_rest_correlation(table_name: str):
     return df_corr
 
 
-def main_pipeline(subjects_list, table_name, re_test: bool = False):
+def main_pipeline(subjects_list, table_name, net:Network = None, re_test: bool = False):
     for sub in subjects_list:
         # Execute clip pipeline
-        corr_: dict = auto_correlation_pipeline(sub, Mode.CLIPS)
+        corr_: dict = auto_correlation_pipeline(sub, Mode.CLIPS, net)
         df_clip: pd.DataFrame = set_activation_vectors(corr_)
         # Execute rest between pipeline
-        corr_: dict = auto_correlation_pipeline(sub, Mode.REST_BETWEEN)
+        corr_: dict = auto_correlation_pipeline(sub, Mode.REST_BETWEEN, net)
         df_rest: pd.DataFrame = set_activation_vectors(corr_)
         # Merging clips and rest between data frame
         corr_mat = join_and_auto_correlate(df_clip, df_rest)
         corr_mat = rearrange_clips(corr_mat, where='rows', with_testretest=re_test)
         corr_mat = rearrange_clips(corr_mat, where='columns', with_testretest=re_test)
-        corr_mat.to_csv(
-            os.path.join(config.ACTIVATION_MATRICES, sub, f'{table_name}.csv'))
-        print('done', sub, 'saved to csv')
+        corr_mat.to_csv(os.path.join(config.ACTIVATION_MATRICES, sub, f'{table_name}.csv'))
+        print('done', sub, 'saved to csv', net.name)
 
 
 def create_avg_activation_matrix(table_name: str):
@@ -155,7 +126,7 @@ def create_avg_activation_matrix(table_name: str):
     plot_matrix(avg_mat, title=table_name)
 
 
-if __name__ == '__main__':
+def wb_pipeline():
     # generate_correlation_per_clip(config.test_list, Mode.CLIPS)
     # generate_correlation_per_clip(config.test_list, Mode.REST_BETWEEN)
 
@@ -172,3 +143,18 @@ if __name__ == '__main__':
 
     clip_rest_corr = total_clip_and_rest_correlation(f"{config.ACTIVATION_MATRICES}\\avg {table}")
     clip_rest_corr.to_csv('rest-clip corr'+table+'.csv')
+
+
+def net_pipeline():
+
+    for net in Network:
+        table = f'{net.value} corr mat without test-re-test'
+        main_pipeline(config.sub_test_list, table, net, re_test=False)
+        create_avg_activation_matrix(table)
+
+        clip_rest_corr = total_clip_and_rest_correlation(f"{config.ACTIVATION_MATRICES}\\avg {table}")
+        clip_rest_corr.to_csv('rest-clip corr' + table + '.csv')
+
+
+if __name__ == '__main__':
+    net_pipeline()
