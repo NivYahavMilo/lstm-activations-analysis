@@ -22,7 +22,7 @@ def _load_csv(sub: str, mode: Mode, net: Network = None):
     return sub
 
 
-def auto_correlation_pipeline(subject: str, mode: Mode, net: Network):
+def auto_correlation_pipeline(subject: str, mode: Mode, net: Network = None):
     """
     function performing auto-correlation for a single subject activation matrix.
     returns a data frame which its columns is flattened matrix represents the correlation for each clip
@@ -47,6 +47,7 @@ def join_and_auto_correlate(df1: pd.DataFrame, df2: pd.DataFrame):
     pearson_corr = MatricesOperations.auto_correlation_matrix(
         matrix=clips_vectors_z)
     return pearson_corr
+
 
 def set_activation_vectors(corr: dict):
     clip_activations = pd.DataFrame()
@@ -91,7 +92,7 @@ def total_clip_and_rest_correlation(table_name: str):
     return df_corr
 
 
-def main_pipeline(subjects_list, table_name, net:Network = None, re_test: bool = False):
+def main_pipeline(subjects_list, table_name, net: Network = None, re_test: bool = False):
     for sub in subjects_list:
         # Execute clip pipeline
         corr_: dict = auto_correlation_pipeline(sub, Mode.CLIPS, net)
@@ -135,18 +136,17 @@ def wb_pipeline():
     create_avg_activation_matrix(table)
 
     clip_rest_corr = total_clip_and_rest_correlation(f"{config.ACTIVATION_MATRICES}\\avg {table}")
-    clip_rest_corr.to_csv('rest-clip corr'+table+'.csv')
+    clip_rest_corr.to_csv('rest-clip corr' + table + '.csv')
 
     table = 'corr mat wb with test-re-test'
     main_pipeline(config.sub_test_list, table, re_test=True)
     create_avg_activation_matrix(table)
 
     clip_rest_corr = total_clip_and_rest_correlation(f"{config.ACTIVATION_MATRICES}\\avg {table}")
-    clip_rest_corr.to_csv('rest-clip corr'+table+'.csv')
+    clip_rest_corr.to_csv('rest-clip corr' + table + '.csv')
 
 
 def net_pipeline():
-
     for net in Network:
         table = f'{net.value} corr mat without test-re-test'
         main_pipeline(config.sub_test_list, table, net, re_test=False)

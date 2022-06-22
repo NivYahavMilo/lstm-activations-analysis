@@ -144,4 +144,3 @@ if __name__ == '__main__':
     avg_signal = iterate_subs(clip_i=testretest, mode=None)
     clip_name = config.idx_to_clip.get(testretest)
     plot_signal(avg_signal, clip_name)
-    pass
