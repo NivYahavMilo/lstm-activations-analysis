@@ -13,6 +13,8 @@ CONNECTIVITY_FOLDER = os.path.join(ROOT_PATH, 'fmri_connectivity_matrices')
 MAPPINGS_PATH = os.path.join(ROOT_PATH, 'mappings')
 CORRELATION_MATRIX = os.path.join(ROOT_PATH, 'correlation_matrix')
 RESULTS_PATH = os.path.join(ROOT_PATH, 'results')
+RESULTS_PATH_NETWORKS = os.path.join(ROOT_PATH, 'results', 'networks')
+
 
 TEST_SUBJECTS_AMOUNT = 76
 TRAIN_SUBJECTS_AMOUNT = 100
