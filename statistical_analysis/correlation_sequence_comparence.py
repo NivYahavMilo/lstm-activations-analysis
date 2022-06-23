@@ -13,18 +13,17 @@ class CorrelationSequence:
     @staticmethod
     def get_single_tr_seq(sequence: pd.DataFrame, tr: int):
         if tr == -1:
-            tr = int(max(sequence['tr'].values))
-
+            try:
+                tr = int(max(sequence['tr'].values))
+            except:
+                pass
         seq = sequence[sequence['tr'] == tr]
         seq = seq.drop(['y', 'tr'], axis=1)
         return seq
 
     @staticmethod
     def load(table_path):
-        data = pd.read_csv(os.path.join(
-            config.AVG_ACTIVATION_MATRICES,
-            f"{table_path}//activation_matrix.csv"))
-
+        data = pd.read_csv(f"{table_path}//activation_matrix.csv")
         return data
 
     @staticmethod
@@ -65,10 +64,12 @@ class CorrelationSequence:
 
         return all_sub_last_tr_clip, all_sub_rest_trs
 
-    def iterate_clips(self):
+    def generate_sequence_comparison(self, net: Network, table_name):
         correlation_by_tr = {}
         for clip in config.idx_to_clip.values():
-            subs_clip, subs_rest = self.get_subjects_average_single_tr(clip)
+            if clip.startswith('test'):
+                continue
+            subs_clip, subs_rest = self.get_subjects_average_single_tr(clip, net)
             clip_seq = self.get_avg_clip_seq(subs_clip, Mode.CLIPS)
             rest_seqs = self.get_avg_clip_seq(subs_rest, Mode.REST_BETWEEN)
             for tr, seq in enumerate(rest_seqs):
@@ -79,10 +80,25 @@ class CorrelationSequence:
 
                 correlation_by_tr.setdefault(clip, []).append(round(rest_clip_corr.loc[0].at[1], 3))
 
-        pd.DataFrame(correlation_by_tr).to_csv(
-            f"{config.CORRELATION_MATRIX_BY_TR}\\last tr clip correlation with rest between.csv"
+        correlation_by_tr = pd.DataFrame(correlation_by_tr)
+        correlation_by_tr.to_csv(
+            f"{config.CORRELATION_MATRIX_BY_TR}\\"
+            f"{table_name}.csv"
         )
+        print(f"Saved {table_name}")
+        return correlation_by_tr
+
+    def generate_sequence_comparison_networks(self):
+        for net in Network:
+            print(f"Working on network {net.name}")
+            name = f'lstm patterns {net.value} last tr clip correlation with rest between without test-re-test'
+            self.generate_sequence_comparison(net, name)
+
 
 if __name__ == '__main__':
     corr_seq = CorrelationSequence()
-    corr_seq.iterate_clips()
+
+    corr_seq.generate_sequence_comparison(
+        net=None,
+        table_name="lstm patterns WB last tr clip correlation with rest between without test-re-test.csv")
+    corr_seq.generate_sequence_comparison_networks()

@@ -6,7 +6,7 @@ import pandas as pd
 
 
 
-def plot_bar():
+def plot_rest_clip_correlation_bar():
     res = {}
     res_path = config.RESULTS_PATH_NETWORKS
     for net in os.listdir(res_path):
@@ -23,6 +23,9 @@ def plot_bar():
     plt.xticks(rotation=60)
     plt.show()
 
+
+
+
 if __name__ == '__main__':
 
-    plot_bar()
+    plot_rest_clip_correlation_bar()

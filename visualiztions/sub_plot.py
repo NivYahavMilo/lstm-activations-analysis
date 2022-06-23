@@ -19,7 +19,7 @@ def subplot_signal_from_dict(data):
 
     plt.show()
 
-def plot_signals_on_top(data):
+def plot_signals_on_top(data, title):
     correlations = []
 
     for _seq, _color in zip(data.items(), colors.CSS4_COLORS):
@@ -45,13 +45,25 @@ def plot_signals_on_top(data):
 
     # Enable legend
     ax.legend(loc="upper right")
-    ax.set_title("Last tr clip Correlation with Resting state")
+    ax.set_title(title)
 
     plt.xlabel("Rest TR")
     plt.ylabel("Correlation Value")
     plt.show()
 
-if __name__ == '__main__':
-    table_path = f'{config.CORRELATION_MATRIX_BY_TR}\\last tr clip correlation with rest between.csv'
+
+def _subplot(table_path, title):
     df = pd.read_csv(table_path, index_col=0)
-    plot_signals_on_top(df.to_dict())
+    plot_signals_on_top(data=df.to_dict(), title=title)
+
+
+if __name__ == '__main__':
+    table_path = f'{config.CORRELATION_MATRIX_BY_TR}\\'\
+                 f'fmri last tr clip correlation with rest between without test-re-test.csv'
+
+    _subplot(table_path, "fMRI Last tr clip Correlation with Resting state")
+
+    table_path = f'{config.CORRELATION_MATRIX_BY_TR}\\' \
+                 f'last tr clip correlation with rest between without test-re-test.csv'
+    title = "LSTM patterns similarity last tr clip with rest between"
+    _subplot(table_path, title)
