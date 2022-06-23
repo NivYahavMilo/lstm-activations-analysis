@@ -1,7 +1,6 @@
 import os
 import pandas as pd
 
-
 ROOT_PATH = os.path.abspath(os.path.curdir)
 MODELS_PATH = os.path.join(ROOT_PATH, 'saved_models')
 MODELS_NETWORKS_PATH = os.path.join(ROOT_PATH, 'saved_models', 'networks', 'models')
@@ -17,7 +16,6 @@ CORRELATION_MATRIX_BY_TR = os.path.join(ROOT_PATH, 'Correlation Matrix', 'Correl
 CORRELATION_MATRIX_REST_CLIP = os.path.join(ROOT_PATH, 'Correlation Matrix', 'Rest-clips correlation')
 RESULTS_PATH = os.path.join(ROOT_PATH, 'results')
 RESULTS_PATH_NETWORKS = os.path.join(ROOT_PATH, 'results', 'networks')
-
 
 TEST_SUBJECTS_AMOUNT = 76
 TRAIN_SUBJECTS_AMOUNT = 100
@@ -59,14 +57,12 @@ connectivity_mapping = {0: 'testretest',
                         14: 'starwars',
                         }
 
-train_size = 100
-
 
 def config_data():
     df = pd.read_pickle(os.path.join(FMRI_DATA, '4_runs_rest_between.pkl'))
     subject_list = df['Subject'].astype(str).unique()
-    sub_train_list_ = subject_list[:train_size]
-    sub_test_list_ = subject_list[train_size:]
+    sub_train_list_ = subject_list[:TRAIN_SUBJECTS_AMOUNT]
+    sub_test_list_ = subject_list[TRAIN_SUBJECTS_AMOUNT:]
     return sub_train_list_, sub_test_list_
 
 

@@ -4,6 +4,4 @@ numpy
 pandas
 scipy
 sklearn
-multimethod
 matplotlib
-seaborn

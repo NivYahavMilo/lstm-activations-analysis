@@ -61,10 +61,11 @@ class TableBuilder:
     def subject_tables_forming_wb(cls, activation_path, mode: Mode):
         subjects_mappings = _load_pkl(os.path.join(config.MAPPINGS_PATH,
                                                    "subject_occurrence_mapping.pkl"))
+        test_subjects = subjects_mappings.get("test")
         activations = _load_pkl(activation_path)
         activations = activations.get("lstm_activations")
 
-        for subject, occurrence in subjects_mappings.items():
+        for subject, occurrence in test_subjects.items():
             subjects_dir = cls.__create_subject_dir(str(subject), mode)
             subject_df = cls._attach_activations_per_subject(occurrence, activations)
 
@@ -90,11 +91,25 @@ class TableBuilder:
                 print(f"Done forming networks table - subject: {subject}; mode: {mode.name}; net: {net}")
 
 
-if __name__ == '__main__':
+def networks_pipeline():
     table_builder = TableBuilder()
 
     path = os.path.join(config.ACTIVATIONS_NETWORKS_PATH, Mode.CLIPS.value)
-    table_builder.subject_tables_forming_networks(path, Mode.CLIPS)
+    table_builder.subject_tables_forming_networks(activation_path=path, mode=Mode.CLIPS)
 
     path = os.path.join(config.ACTIVATIONS_NETWORKS_PATH, Mode.REST_BETWEEN.value)
-    table_builder.subject_tables_forming_networks(path, Mode.REST_BETWEEN)
+    table_builder.subject_tables_forming_networks(activation_path=path, mode=Mode.REST_BETWEEN)
+
+def wb_pipeline():
+    table_builder = TableBuilder()
+
+    path = f'{config.MODELS_PATH}\\{Mode.CLIPS.value}_model_activations.pkl'
+    table_builder.subject_tables_forming_wb(activation_path=path, mode=Mode.CLIPS)
+
+    path = f'{config.MODELS_PATH}\\{Mode.REST_BETWEEN.value}_model_activations.pkl'
+    table_builder.subject_tables_forming_wb(activation_path=path, mode=Mode.REST_BETWEEN)
+
+
+if __name__ == '__main__':
+    wb_pipeline()
+    networks_pipeline()
