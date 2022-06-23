@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-import numpy as np
 
 import config
 from mappings.re_arranging import rearrange_clips
@@ -99,32 +98,24 @@ def compare_cliptime_window_to_rest_between(sub_list):
 
 
 def corr_pipe_single_tr(table_name, re_test: bool = False):
-    last_tr_mat = compare_cliptorest_single_tr()
-    last_tr_mat = last_tr_mat.apply(lambda x: z_score(x))
-    last_tr_corr = MatricesOperations.auto_correlation_matrix(last_tr_mat)
-    last_tr_corr = rearrange_clips(last_tr_corr, where='rows', with_testretest=re_test)
-    last_tr_corr = rearrange_clips(last_tr_corr, where='columns', with_testretest=re_test)
-    last_tr_corr.to_csv(f'{table_name}.csv')
+    _tr_mat = compare_cliptorest_single_tr()
+    _tr_mat = _tr_mat.apply(lambda x: z_score(x))
+    _tr_corr = MatricesOperations.auto_correlation_matrix(_tr_mat)
+    _tr_corr = rearrange_clips(_tr_corr, where='rows', with_testretest=re_test)
+    _tr_corr = rearrange_clips(_tr_corr, where='columns', with_testretest=re_test)
+    _tr_corr.to_csv(f'{table_name}.csv')
+
+
+def main_single_tr_pipe(with_retest=False):
+    table = 'last tr corr wb with test re-test'
+    corr_pipe_single_tr(table, re_test=with_retest)
+
+    mat = pd.read_csv(f'{table}.csv', index_col=0)
+    plot_matrix(mat, table)
+
+    clip_rest_corr = total_clip_and_rest_correlation(table)
+    clip_rest_corr.to_csv('rest-clip ' + table + '.csv')
+
 
 if __name__ == '__main__':
-    # main_correlation_tr_pipeline(config.sub_test_list)
-    # create_avg_activation_matrix('correlation_matrix_first_19_tr')
-    table = 'last tr corr wb with test re-test'
-    corr_pipe_single_tr(table, re_test=True)
-
-    mat = pd.read_csv(f'{table}.csv', index_col=0)
-    plot_matrix(mat, table)
-
-    clip_rest_corr = total_clip_and_rest_correlation(table)
-    clip_rest_corr.to_csv('rest-clip corr'+table+'.csv')
-
-    table = 'last tr corr wb without test re-test'
-    corr_pipe_single_tr(table, re_test=False)
-
-    mat = pd.read_csv(f'{table}.csv', index_col=0)
-    plot_matrix(mat, table)
-
-    clip_rest_corr = total_clip_and_rest_correlation(table)
-    clip_rest_corr.to_csv('rest-clip corr'+table+'.csv')
-
-
+    main_single_tr_pipe(with_retest=False)
