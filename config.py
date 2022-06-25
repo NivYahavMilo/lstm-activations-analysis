@@ -16,6 +16,7 @@ CORRELATION_MATRIX_BY_TR = os.path.join(ROOT_PATH, 'Correlation Matrix', 'Correl
 CORRELATION_MATRIX_REST_CLIP = os.path.join(ROOT_PATH, 'Correlation Matrix', 'Rest-clips correlation')
 RESULTS_PATH = os.path.join(ROOT_PATH, 'results')
 RESULTS_PATH_NETWORKS = os.path.join(ROOT_PATH, 'results', 'networks')
+FIGURES_PATH = os.path.join(ROOT_PATH, 'figures')
 
 TEST_SUBJECTS_AMOUNT = 76
 TRAIN_SUBJECTS_AMOUNT = 100

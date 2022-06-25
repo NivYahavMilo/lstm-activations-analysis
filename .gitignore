@@ -1,5 +1,6 @@
 *.pkl
 *.csv
 *.pt
+*.png
 /activation_matrices
 /.idea

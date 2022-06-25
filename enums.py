@@ -6,6 +6,7 @@ class Mode(Enum):
     # REST = 'rest'
     REST_BETWEEN = 'rest_between'
 
+
 class Network(Enum):
     Visual = 'VisualNetwork'
     Limbic = 'Limbic'
@@ -16,4 +17,6 @@ class Network(Enum):
     Frontoparietal = 'Cont'
 
 
-
+class DataType(Enum):
+    FMRI = 'fmri'
+    LSTM_PATTERNS = 'lstm patterns'

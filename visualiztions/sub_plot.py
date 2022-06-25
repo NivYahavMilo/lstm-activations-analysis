@@ -1,8 +1,11 @@
+import os.path
+
 import pandas as pd
 from matplotlib import pyplot as plt
 from matplotlib import colors
 
 import config
+from enums import Network
 
 
 def subplot_signal_from_dict(data):
@@ -19,6 +22,7 @@ def subplot_signal_from_dict(data):
 
     plt.show()
 
+
 def plot_signals_on_top(data, title):
     correlations = []
 
@@ -31,10 +35,9 @@ def plot_signals_on_top(data, title):
             'color': colors.CSS4_COLORS[_color],
             'linewidth': 5,
 
-
         })
 
-    fig, ax = plt.subplots(figsize=(20,10),)
+    fig, ax = plt.subplots(figsize=(20, 10), )
 
     for signal in correlations:
         ax.plot(signal['x'],  # signal['y'],
@@ -49,7 +52,10 @@ def plot_signals_on_top(data, title):
 
     plt.xlabel("Rest TR")
     plt.ylabel("Correlation Value")
+    fig1 = plt.gcf()
     plt.show()
+    plt.draw()
+    fig1.savefig(fr"{config.FIGURES_PATH}\\{title}.png", dpi=100)
 
 
 def _subplot(table_path, title):
@@ -57,8 +63,8 @@ def _subplot(table_path, title):
     plot_signals_on_top(data=df.to_dict(), title=title)
 
 
-if __name__ == '__main__':
-    table_path = f'{config.CORRELATION_MATRIX_BY_TR}\\'\
+def _plot_wb():
+    table_path = f'{config.CORRELATION_MATRIX_BY_TR}\\' \
                  f'fmri last tr clip correlation with rest between without test-re-test.csv'
 
     _subplot(table_path, "fMRI Last tr clip Correlation with Resting state")
@@ -67,3 +73,18 @@ if __name__ == '__main__':
                  f'last tr clip correlation with rest between without test-re-test.csv'
     title = "LSTM patterns similarity last tr clip with rest between"
     _subplot(table_path, title)
+
+
+def _plot_networks(data_type):
+
+    for net in Network:
+        table_name = f"{data_type} {net.value} last tr clip correlation with rest between without test-re-test"
+        tables_path = os.path.join(
+            config.CORRELATION_MATRIX_BY_TR,
+            f"{table_name}.csv")
+        _subplot(tables_path, table_name)
+
+
+if __name__ == '__main__':
+    _plot_networks(data_type="lstm patterns")
+    _plot_networks(data_type="fmri")
