@@ -15,6 +15,7 @@ class Network(Enum):
     VentralAttention = 'SalVenAttn'
     Default = 'DMN'
     Frontoparietal = 'Cont'
+    #TODO: WB = whole brain
 
 
 class DataType(Enum):

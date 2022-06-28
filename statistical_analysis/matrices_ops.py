@@ -54,3 +54,10 @@ class MatricesOperations:
         matrices: List[np.array] = [mat for mat in matrices]
         avg_mat: np.array = np.mean(matrices, axis=axis)
         return avg_mat
+
+    @classmethod
+    def get_avg_vector(cls, vec: pd.Series):
+        return vec.mean()
+
+
+
