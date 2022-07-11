@@ -8,7 +8,7 @@ class HyperParams:
     k_hidden = 150
     k_layers = 1
     train_size = 100
-    device = 0
+    device = 'cpu'
     net = 'wb'
     mode = Mode.CLIPS.value
     zscore = True

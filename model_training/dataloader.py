@@ -28,9 +28,9 @@ def _get_clip_seq(df, subject_list, args):
         for i_class in range(args.k_class):
 
             if i_class == 0:  # split test-retest into 4
-                seqs = df[(df['Subject'] == subject) &
+                seqs = df[(df['Subject'] == int(subject)) &
                           (df['y'] == 0)][features].values
-                label_seqs = df[(df['Subject'] == subject) &
+                label_seqs = df[(df['Subject'] == int(subject)) &
                                 (df['y'] == 0)]['y'].values
 
                 k_time = int(seqs.shape[0] / K_RUNS)
@@ -44,9 +44,9 @@ def _get_clip_seq(df, subject_list, args):
                     X.append(torch.FloatTensor(seq))
                     y.append(torch.LongTensor(label_seq))
             else:
-                seq = df[(df['Subject'] == subject) &
+                seq = df[(df['Subject'] == int(subject)) &
                          (df['y'] == i_class)][features].values
-                label_seq = df[(df['Subject'] == subject) &
+                label_seq = df[(df['Subject'] == int(subject)) &
                                (df['y'] == i_class)]['y'].values
                 if args.zscore:
                     # zscore each seq that goes into model

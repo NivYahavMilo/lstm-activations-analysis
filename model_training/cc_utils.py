@@ -10,7 +10,7 @@ import torch
 from sklearn.metrics import confusion_matrix
 
 import config
-from supporting_functions import _dict_to_pkl, _load_pkl
+from supporting_functions import _dict_to_pkl
 from torch_utils import _to_cpu
 
 K_RUNS = 4  # number of runs for each subject
@@ -76,7 +76,9 @@ def _get_confusion_matrix(y, predicted):
     return confusion_matrix(y, p)
 
 def _lstm_test_acc(model, X, y, X_len, max_length,
-                   clip_time, k_sub, args, return_states=False):
+                   clip_time, k_sub, args,
+                   return_states=False,
+                   save_activations=False):
     '''
     masked accuracy for lstm
     per participant accuracy
@@ -90,9 +92,11 @@ def _lstm_test_acc(model, X, y, X_len, max_length,
     else:
         outputs = model(X, X_len, max_length)
 
-    # save predicted activations
-    _dict_to_pkl(model.hidden_activations,
-                 os.path.join(config.MODELS_NETWORKS_PATH, f'{args.net} {args.mode} activations'))
+    if save_activations:
+        # save predicted activations
+        _dict_to_pkl(model.hidden_activations,
+                     os.path.join(config.MODELS_NETWORKS_PATH,
+                                  f'{args.net} {args.mode} activations'))
 
     # logits to labels
     _, y_hat = torch.max(outputs, 2)
