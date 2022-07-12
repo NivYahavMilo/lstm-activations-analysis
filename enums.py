@@ -5,6 +5,7 @@ class Mode(Enum):
     CLIPS = 'clips'
     # REST = 'rest'
     REST_BETWEEN = 'rest_between'
+    COMBINED = 'combined'
 
 
 class Network(Enum):

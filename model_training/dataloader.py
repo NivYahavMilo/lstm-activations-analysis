@@ -1,3 +1,5 @@
+import os.path
+
 import numpy as np
 import pandas as pd
 import random
@@ -5,7 +7,11 @@ import pickle
 
 import torch
 from torch.nn.utils.rnn import pad_sequence
-from cc_utils import _get_clip_labels
+from model_training.cc_utils import _get_clip_labels
+from model_training.fmri_utils import _get_parcel
+
+import config
+from enums import Mode
 
 K_RUNS = 4
 K_SEED = 330
@@ -86,14 +92,19 @@ def _clip_class_df(args):
         args.r_roi = 0
         args.r_seed = 0
 
-    load_path = (args.input_data + '/data_MOVIE_runs_' +
-                 'roi_%d_net_%d_ts.pkl' % (args.roi, args.net))
+    load_path = (os.path.join(config.FMRI_DATA,
+                              'data_MOVIE_runs_roi_300_net_7_ts.pkl'))
 
     with open(load_path, 'rb') as f:
         data = pickle.load(f)
 
     # where are the clips within the run?
-    timing_file = pd.read_csv('data/videoclip_tr_lookup.csv')
+    mode_mapping = {Mode.CLIPS: 'videoclip_tr_lookup',
+                    Mode.REST_BETWEEN: 'restclip_tr_lookup',
+                    Mode.COMBINED: 'combined_clip_tr_lookup'}
+
+    timing_file = pd.read_csv(os.path.join(config.FMRI_DATA,
+                              f'{mode_mapping.get(args.mode)}.csv'))
 
     # pick either all ROIs or subnetworks
     if args.subnet != 'wb':
@@ -123,7 +134,7 @@ def _clip_class_df(args):
     '''
     main
     '''
-    clip_y = _get_clip_labels()
+    clip_y = _get_clip_labels(timing_file)
 
     table = []
     for run in range(K_RUNS):

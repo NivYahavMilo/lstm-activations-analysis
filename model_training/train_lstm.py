@@ -10,10 +10,11 @@ from model_training.hyperparameters import HyperParams
 from supporting_functions import _dict_to_pkl
 import torch
 import torch.nn as nn
-from models import LSTMClassifier
+from model_training.models import LSTMClassifier
 
-from cc_utils import _lstm_test_acc
+from model_training.cc_utils import _lstm_test_acc, _test_time_window
 from dataloader import _get_clip_seq as _get_seq
+from dataloader import _clip_class_df
 
 K_SEED = 330
 
@@ -40,6 +41,8 @@ def _test(df, args):
     features = [ii for ii in df.columns if 'feat' in ii]
     k_feat = len(features)
     print('number of classes = %d' % (args.k_class))
+
+    df = _test_time_window(df, window_range=range(0, 10))
 
     # length of each clip
     clip_time = np.zeros(args.k_class)
@@ -110,12 +113,14 @@ def _test(df, args):
 
     print(losses)
     print('--- train time =  %0.4f seconds ---' % (time.time() - then))
-    torch.save(model, f"{args.net} {args.mode}.pt")
+    # torch.save(model, f"{args.net} {args.mode.value} 10-20 tr.pt")
     '''
     results on test data
     '''
     a, a_t, c_mtx = _lstm_test_acc(model, X_test, y_test,
-                                   test_len, max_length, clip_time, len(test_list), args)
+                                   test_len, max_length, clip_time,
+                                   len(test_list), args,
+                                   save_activations=False)
     results['test'] = a
     print('sacc = %0.3f' % np.mean(a))
     for ii in range(args.k_class):
@@ -140,15 +145,19 @@ def run_net(args):
 
 def run(args):
     df = pd.read_pickle(os.path.join(config.FMRI_DATA,
-                                     f"4_runs_{args.mode}.pkl"))
-    res_path = os.path.join(config.RESULTS_PATH, f'300 roi {args.mode} results')
+                                     f"4_runs_{args.mode.value}.pkl"))
+    res_path = os.path.join(config.RESULTS_PATH, f'300 roi {args.mode.value} 0-10 tr results')
     results = {'test_mode': _test(df, args)}
-    with open(res_path, 'wb') as f:
+    with open(f'{res_path}.pkl', 'wb') as f:
         pickle.dump(results, f)
+
+def create_pkl_df(args):
+    df = _clip_class_df(args)
+    df.to_pickle(f"4_runs_{args.mode.value}.pkl")
+
 
 
 if __name__ == '__main__':
     hp = HyperParams()
-    hp.mode = Mode.REST_BETWEEN.value
-    run_net(hp)
-    pass
+    hp.mode = Mode.REST_BETWEEN
+    run(args=hp)

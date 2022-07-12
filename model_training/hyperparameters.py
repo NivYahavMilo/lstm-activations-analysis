@@ -12,3 +12,5 @@ class HyperParams:
     net = 'wb'
     mode = Mode.CLIPS.value
     zscore = True
+    subnet = 'wb'
+    roi = 300
