@@ -206,11 +206,10 @@ def temporal_pipeline(models):
 
 
 def main():
-    models = {'first_10_tr': '300 roi rest_between 0-10 tr results.pkl',
-              'last_10_tr': '300 roi rest_between 10-20 tr results.pkl'}
+    # models = {'first_10_tr': '300 roi rest_between 0-10 tr results.pkl',
+    #           'last_10_tr': '300 roi rest_between 10-20 tr results.pkl'}
 
-    models = {'combined': '300 roi Mode.COMBINED results.pkl',
-              'combined pred on rest': '300 roi rest_between_model_combined.pkl'}
+    models = {'combined': '300 roi Mode.COMBINED results.pkl'}
     mean_pipeline(models)
     temporal_pipeline(models)
 

@@ -13,10 +13,7 @@ class CorrelationSequence:
     @staticmethod
     def get_single_tr_seq(sequence: pd.DataFrame, tr: int):
         if tr == -1:
-            try:
-                tr = int(max(sequence['tr'].values))
-            except:
-                pass
+            tr = int(max(sequence['tr'].values))
         seq = sequence[sequence['tr'] == tr]
         seq = seq.drop(['y', 'tr'], axis=1)
         return seq
