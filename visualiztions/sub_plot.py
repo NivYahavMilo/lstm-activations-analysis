@@ -7,6 +7,7 @@ from matplotlib import pyplot as plt
 import config
 from enums import Network
 from statistical_analysis.matrices_ops import MatricesOperations
+from supporting_functions import _load_pkl
 
 
 def subplot_signal_from_dict(data):
@@ -33,8 +34,8 @@ def plot_signals_on_top(data, title):
         clip, seq = _seq
         correlations.append({
             "name": clip,
-            "x": list(seq.values()),
-            "Y": list(seq.keys()),
+            "x": list(seq["relation_distance"]),
+            "Y": [1, -1],
             'color': colors.CSS4_COLORS[_color],
             'linewidth': 5,
 
@@ -114,8 +115,16 @@ def _plot_combined_avg_wb_and_networks(data_type):
         'Average movies correlation with rest between')
 
 
+def plot_relation_coding_fmri():
+    data = _load_pkl("Relational Distance fMRI.pkl")
+    plot_signals_on_top(data, title="Relation Coding fMRI")
+
+
+
+
 if __name__ == '__main__':
     # _plot_networks(data_type="lstm patterns")
     # _plot_networks(data_type="fmri")
-    _plot_combined_avg_wb_and_networks("lstm patterns")
-    _plot_combined_avg_wb_and_networks("fmri")
+    # _plot_combined_avg_wb_and_networks("lstm patterns")
+    # _plot_combined_avg_wb_and_networks("fmri")
+    plot_relation_coding_fmri()

@@ -35,7 +35,7 @@ def auto_correlation_pipeline(subject: str, mode: Mode, net: Network = None):
         # normalize matrix values with z-score
         mat_zscore = mat.apply(lambda x: z_score(x))
         # Calculate Pearson correlation
-        pearson_corr = MatricesOperations.auto_correlation_matrix(
+        pearson_corr = MatricesOperations.correlation_matrix(
             matrix=mat_zscore)
         corr_per_clip[f"{clip}_{mode.value}"] = pearson_corr
     return corr_per_clip
@@ -44,7 +44,7 @@ def auto_correlation_pipeline(subject: str, mode: Mode, net: Network = None):
 def join_and_auto_correlate(df1: pd.DataFrame, df2: pd.DataFrame):
     clip_vectors = df1.join(df2)
     clips_vectors_z = clip_vectors.apply(lambda x: z_score(x))
-    pearson_corr = MatricesOperations.auto_correlation_matrix(
+    pearson_corr = MatricesOperations.correlation_matrix(
         matrix=clips_vectors_z)
     return pearson_corr
 
@@ -67,7 +67,7 @@ def generate_correlation_per_clip(subject_list, mode: Mode):
             corr_mat = pd.read_csv(os.path.join(mat_path, sub, mode.value, 'activation_matrix.csv'))
             matrix = corr_mat[corr_mat['y'] == clip]
             matrix = matrix.drop(['y', 'tr'], axis=1)
-            matrix = MatricesOperations.auto_correlation_matrix(matrix)
+            matrix = MatricesOperations.correlation_matrix(matrix)
             all_cor_mat.append(matrix)
         avg_mat: np.array = MatricesOperations.get_avg_matrix(
             (mat for mat in all_cor_mat))

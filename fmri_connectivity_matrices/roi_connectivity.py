@@ -32,7 +32,7 @@ class RoiConnectivity:
             # normalize matrix values with z-score
             mat_zscore = mat.apply(lambda x: z_score(x))
             # Calculate Pearson correlation
-            pearson_corr = MatricesOperations.auto_correlation_matrix(
+            pearson_corr = MatricesOperations.correlation_matrix(
                 matrix=mat_zscore)
             clip_name = config.connectivity_mapping.get(clip)
             corr_per_clip[f"{clip_name}_{mode.value}"] = pearson_corr

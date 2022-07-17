@@ -18,7 +18,7 @@ class MatricesOperations:
         return pearson_corr
 
     @classmethod
-    def auto_correlation_matrix(cls, matrix: pd.DataFrame):
+    def correlation_matrix(cls, matrix: pd.DataFrame):
         return matrix.corr()
 
     @classmethod

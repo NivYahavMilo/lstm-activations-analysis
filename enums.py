@@ -9,6 +9,7 @@ class Mode(Enum):
 
 
 class Network(Enum):
+    WB = 'whole brain'
     Visual = 'VisualNetwork'
     Limbic = 'Limbic'
     Somatomotor = 'SomMotor'
@@ -16,7 +17,6 @@ class Network(Enum):
     VentralAttention = 'SalVenAttn'
     Default = 'DMN'
     Frontoparietal = 'Cont'
-    #TODO: WB = whole brain
 
 
 class DataType(Enum):

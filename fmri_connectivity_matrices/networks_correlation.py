@@ -27,7 +27,7 @@ def pull_triangle_from_corr_matrix(mode:Mode, net: Network):
     data_frame = data_frame.apply(lambda x: z_score(x))
     # apply correlation between the fmri movie vectors
     # Matrix shaped (MOVIE x MOVIE)
-    movie_corr = MatricesOperations.auto_correlation_matrix(data_frame)
+    movie_corr = MatricesOperations.correlation_matrix(data_frame)
     # flatten results
     # Vector shaped (MOVIE*(MOVIE-1)/2)x1
     movie_corr_flat = MatricesOperations.drop_symmetric_side_of_a_matrix(movie_corr)
@@ -40,7 +40,7 @@ def correlate_flattened_representation():
             net_vec = pull_triangle_from_corr_matrix(mode, net)
             movies_vectors[net.name] = net_vec
         data_frame = pd.DataFrame.from_dict(movies_vectors)
-        cor_mat_all_nets = MatricesOperations.auto_correlation_matrix(data_frame)
+        cor_mat_all_nets = MatricesOperations.correlation_matrix(data_frame)
 
 
 if __name__ == '__main__':

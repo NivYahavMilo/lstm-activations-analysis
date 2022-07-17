@@ -72,7 +72,7 @@ class CorrelationSequence:
             for tr, seq in enumerate(rest_seqs):
                 rest_clip = pd.DataFrame([clip_seq, seq]).T
                 rest_clip_zscore = rest_clip.apply(lambda x: z_score(x))
-                rest_clip_corr = MatricesOperations.auto_correlation_matrix(
+                rest_clip_corr = MatricesOperations.correlation_matrix(
                     rest_clip_zscore)
 
                 correlation_by_tr.setdefault(clip, []).append(round(rest_clip_corr.loc[0].at[1], 3))

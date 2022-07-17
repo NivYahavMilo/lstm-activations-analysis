@@ -45,7 +45,7 @@ def auto_correlation_pipeline_custom_tr(subject: str, mode: Mode):
         # normalize matrix values with z-score
         mat_zscore = mat_pruned.apply(lambda x: z_score(x))
         # Calculate Pearson correlation
-        pearson_corr = MatricesOperations.auto_correlation_matrix(
+        pearson_corr = MatricesOperations.correlation_matrix(
             matrix=mat_zscore)
         corr_per_clip[f"{clip}_{mode.value}"] = pearson_corr
     return corr_per_clip
@@ -100,14 +100,14 @@ def compare_cliptime_window_to_rest_between(sub_list):
 def corr_pipe_single_tr(table_name, re_test: bool = False):
     _tr_mat = compare_cliptorest_single_tr()
     _tr_mat = _tr_mat.apply(lambda x: z_score(x))
-    _tr_corr = MatricesOperations.auto_correlation_matrix(_tr_mat)
+    _tr_corr = MatricesOperations.correlation_matrix(_tr_mat)
     _tr_corr = rearrange_clips(_tr_corr, where='rows', with_testretest=re_test)
     _tr_corr = rearrange_clips(_tr_corr, where='columns', with_testretest=re_test)
     _tr_corr.to_csv(f'{table_name}.csv')
 
 
 def main_single_tr_pipe(with_retest=False):
-    table = 'last tr corr wb with test re-test'
+    table = 'last tr corr wb without test re-test'
     corr_pipe_single_tr(table, re_test=with_retest)
 
     mat = pd.read_csv(f'{table}.csv', index_col=0)

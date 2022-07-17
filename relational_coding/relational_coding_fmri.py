@@ -19,6 +19,10 @@ class RelationalCodingfMRI(RelationalCoding):
                                 mode.value,
                                 f'df{network.value}.pkl')
 
+        if network == Network.WB:
+            net_path = os.path.join(config.FMRI_DATA,
+                                f'4_runs_{mode.value}.pkl')
+
         data = pd.read_pickle(net_path)
         return data
 
@@ -69,7 +73,7 @@ class RelationalCodingfMRI(RelationalCoding):
 
         _tr_mat = cls.compare_clip_to_rest_single_tr(clip_data, rest_data, tr)
         _tr_mat = _tr_mat.apply(lambda x: z_score(x))
-        _tr_corr = MatricesOperations.auto_correlation_matrix(_tr_mat)
+        _tr_corr = MatricesOperations.correlation_matrix(_tr_mat)
         _tr_corr = rearrange_clips(_tr_corr, where='rows',
                                    with_testretest=re_test)
         _tr_corr = rearrange_clips(_tr_corr, where='columns',
@@ -101,6 +105,7 @@ class RelationalCodingfMRI(RelationalCoding):
                 movies=clip_data,
                 rest=rest_data,
                 re_test=with_retest)
+
 
         _dict_to_pkl(relational_coding, "Relational Distance fMRI")
 

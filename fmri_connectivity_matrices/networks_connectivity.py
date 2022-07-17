@@ -40,7 +40,7 @@ class Connectivity:
             # normalize matrix values with z-score
             case_zscore = case.apply(lambda x: z_score(x))
             # correlation per single clip for a single subject
-            corr_net = MatricesOperations.auto_correlation_matrix(case_zscore)
+            corr_net = MatricesOperations.correlation_matrix(case_zscore)
             self.avg_con_per_clip.setdefault(sub, []).append(corr_net)
 
     def _average_all_cases(self):
