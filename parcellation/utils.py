@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 
-import config
 
 def _info(s):
     print('---')
@@ -15,7 +14,7 @@ def _get_parcel(roi, net=7):
     parcel: grayordinate -> ROI map
     nw_info: subnetwork tags for each ROI
     '''
-    parcel_path = (config.PARCEL_DIR +
+    parcel_path = (r"C:\Users\nivy1\Documents\Engineering\MS.c\Thesis\LstmActivationsAnalysis\fmri_data\cifti" +
                    '/Schaefer2018_%dParcels_%dNetworks_order.csv' % (roi, net))
 
     df = pd.read_csv(parcel_path)

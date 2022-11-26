@@ -82,11 +82,11 @@ def run(args):
     participants = np.sort(list(participants))
     _info('Number of participants = %d' % len(participants))
 
-    data = {}
+
     for ii, ID in enumerate(participants):
         ID_files = [file for file in files if ID in file]
         ID_files = np.sort(ID_files)
-
+        data = {}
         # if individual has all 4 runs
         if len(ID_files) == 4:
             _info('%s: %d/%d' % (ID, (ii + 1), len(participants)))
@@ -110,17 +110,16 @@ def run(args):
                 save_ts[:t, :, run] = run_ts
 
             data[ID] = save_ts
-
             SAVE_DIR = args.output_data
             if not os.path.exists(SAVE_DIR):
                 os.makedirs(SAVE_DIR)
 
             save_path = (SAVE_DIR +
-                         '/data_MOVIE_runs_voxel_%d_ts_subject_%d.pkl' % (args.voxel, ID))
+                         '/data_MOVIE_runs_voxel_%d_ts_subject_%s.pkl' % (args.voxel, ID))
             with open(save_path, 'wb') as f:
                 pickle.dump(data, f)
-
             del data, save_ts
+
         else:
             _info('%s not processed' % ID)
 
@@ -133,7 +132,7 @@ if __name__ == '__main__':
     parser.add_argument('-i', '--input-data', type=str,
                         default=r'E:\S1200\7T_task', help='path/to/movie/data')
     parser.add_argument('-o', '--output-data', type=str,
-                        default='data/roi_ts', help='path/to/roi/data')
+                        default=r'E:\\parcelled_data_niv\Schaefer2018_VOXEL_TASK', help='path/to/roi/data')
 
     # parcellation
     parser.add_argument('-r', '--roi', type=int,
