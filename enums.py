@@ -20,5 +20,5 @@ class Network(Enum):
 
 
 class DataType(Enum):
-    FMRI = 'fmri'
-    LSTM_PATTERNS = 'lstm patterns'
+    FMRI = 'fMRI'
+    LSTM_PATTERNS = 'LSTM'

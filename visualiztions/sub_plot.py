@@ -116,8 +116,8 @@ def _plot_combined_avg_wb_and_networks(data_type):
 
 
 def plot_relation_coding_fmri():
-    data = _load_pkl("Relational Distance fMRI.pkl")
-    plot_signals_on_top(data, title="Relation Coding fMRI")
+    data = _load_pkl("Shuffled Relational Distance fMRI.pkl")
+    plot_signals_on_top(data, title="Shuffled Relation Coding fMRI")
 
 
 

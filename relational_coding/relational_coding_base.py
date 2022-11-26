@@ -37,3 +37,10 @@ class RelationalCoding:
         df_corr = df.corr()
         distance = round(df_corr.loc['clip'].at['rest'], 3)
         return distance
+
+    @classmethod
+    def _shuffle_clips(cls, clip_index):
+        mapping = {
+            1:3,2:4,3:5,4:6,5:7,6:8,7:9,8:10,9:11,10:12,11:13,12:14,13:1,14:2
+        }
+        return mapping.get(clip_index)

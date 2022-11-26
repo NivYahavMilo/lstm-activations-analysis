@@ -12,6 +12,7 @@ from supporting_functions import _dict_to_pkl
 
 
 class RelationalCodingfMRI(RelationalCoding):
+    shuffle: bool
 
     @staticmethod
     def _load_data(mode: Mode, network: Network):
@@ -21,7 +22,7 @@ class RelationalCodingfMRI(RelationalCoding):
 
         if network == Network.WB:
             net_path = os.path.join(config.FMRI_DATA,
-                                f'4_runs_{mode.value}.pkl')
+                                    f'4_runs_{mode.value}.pkl')
 
         data = pd.read_pickle(net_path)
         return data
@@ -57,6 +58,9 @@ class RelationalCodingfMRI(RelationalCoding):
             avg_series_per_clip[
                 clip + '_' + Mode.CLIPS.value] = clip_vec.tolist()[0]
 
+            if cls.shuffle:
+                clip_i = cls._shuffle_clips(clip_i)
+
             rest_vec = cls.avg_single_tr_vectors(
                 data=rest,
                 sub_list=config.sub_test_list,
@@ -80,10 +84,8 @@ class RelationalCodingfMRI(RelationalCoding):
                                    with_testretest=re_test)
         return _tr_corr
 
-
-
     @classmethod
-    def rest_tr_iteration(cls, net, movies, rest, re_test):
+    def rest_tr_iteration(cls, movies, rest, re_test):
         relational_coding = {'correlation': [], 'relation_distance': []}
 
         for rest_tr in range(0, 19):
@@ -101,15 +103,14 @@ class RelationalCodingfMRI(RelationalCoding):
             rest_data = cls._load_data(Mode.REST_BETWEEN, net)
             clip_data = cls._load_data(Mode.CLIPS, net)
             relational_coding[net.name] = cls.rest_tr_iteration(
-                net=net,
                 movies=clip_data,
                 rest=rest_data,
                 re_test=with_retest)
+            print(net.name)
 
-
-        _dict_to_pkl(relational_coding, "Relational Distance fMRI")
+        _dict_to_pkl(relational_coding, "Shuffled Relational Distance fMRI")
 
 
 if __name__ == '__main__':
-    relational_coding_instance = RelationalCodingfMRI()
-    relational_coding_instance.executor()
+    RelationalCodingfMRI.shuffle = True
+    RelationalCodingfMRI.executor()

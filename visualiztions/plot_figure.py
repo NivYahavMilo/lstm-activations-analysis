@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 
 import config
+from enums import Network, DataType
+from supporting_functions import _load_pkl
 
 
 def save_matrix_as_image():
@@ -51,11 +53,22 @@ def plot_matrix(matrix: pd.DataFrame, title, cmap: str = 'hot'):
     print()
 
 
-if __name__ == '__main__':
-    mat = pd.read_csv('average_correlation_matrix.csv',
-                      index_col=0)
-    mat1 = pd.read_csv('avg_connectivity_300roi.csv',
-                       index_col=0)
+def plot_heat_activations(data, data_type: DataType):
+    for net, values in data.items():
+        network_data = data[net]
+        correlation_maps = network_data['correlation']
+        if net == Network.Default.name or net == Network.Visual.name:
+            for tr in [2, 10, 18]:
+                title = f"{data_type.value} Rational Coding Correlation {net} at {tr} TR"
+                plot_matrix(correlation_maps[tr],
+                            title=title)
+                print(title)
 
-    plot_matrix(mat, title="activations_300roi")
-    plot_matrix(mat1, title="connectivity_300roi")
+
+
+
+if __name__ == '__main__':
+    data_ = _load_pkl("Relational Distance LSTM patterns.pkl")
+    plot_heat_activations(data_, data_type=DataType.LSTM_PATTERNS)
+    data_ = _load_pkl("Relational Distance fMRI.pkl")
+    plot_heat_activations(data_, data_type=DataType.FMRI)

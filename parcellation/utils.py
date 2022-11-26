@@ -1,8 +1,12 @@
 import numpy as np
 import pandas as pd
 
+import config
 
-PARCEL_DIR = 'data/parcellation/cifti'
+def _info(s):
+    print('---')
+    print(s)
+    print('---')
 
 
 def _get_parcel(roi, net=7):
@@ -11,7 +15,7 @@ def _get_parcel(roi, net=7):
     parcel: grayordinate -> ROI map
     nw_info: subnetwork tags for each ROI
     '''
-    parcel_path = (PARCEL_DIR +
+    parcel_path = (config.PARCEL_DIR +
                    '/Schaefer2018_%dParcels_%dNetworks_order.csv' % (roi, net))
 
     df = pd.read_csv(parcel_path)
