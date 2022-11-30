@@ -116,8 +116,14 @@ def _plot_combined_avg_wb_and_networks(data_type):
 
 
 def plot_relation_coding_fmri():
-    data = _load_pkl("Relational Distance fMRI.pkl")
-    plot_signals_on_top(data, title="Relation Coding fMRI")
+    path = os.path.join(config.ROOT_PATH,"experiments","per_subject")
+    for kk,sub in enumerate(os.listdir(path)):
+        sub_path = os.path.join(path, sub, "Relational Distance fMRI.pkl")
+        data = _load_pkl(sub_path)
+        plot_signals_on_top(data, title=f"Relation Coding fMRI Subject {sub}")
+        if kk==4:
+            break
+
 
 
 

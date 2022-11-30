@@ -29,7 +29,7 @@ class RelationalCodingfMRI(RelationalCoding):
     @classmethod
     def avg_single_tr_vectors(cls, data, sub_list, clip_index, tr_pos):
         clip_per_subs = []
-        for sub in sub_list:
+        for ii,sub in enumerate(sub_list):
             sub_matrix = data[(data['Subject'] == int(sub)) &
                               (data['y'] == clip_index)]
             fmri_vec = cls.get_single_tr(mat_clip=sub_matrix,
