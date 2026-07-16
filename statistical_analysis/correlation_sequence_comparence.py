@@ -1,5 +1,5 @@
 import os
-import config
+import settings
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -39,17 +39,17 @@ class CorrelationSequence:
     def get_subjects_average_single_tr(self, clip, net: Network = None):
         all_sub_last_tr_clip = []
         all_sub_rest_trs = []
-        for sub in os.listdir(config.ACTIVATION_MATRICES):
+        for sub in os.listdir(settings.ACTIVATION_MATRICES):
             if not sub.isdigit():
                 continue
-            sub_path = os.path.join(config.ACTIVATION_MATRICES, sub, Mode.CLIPS.value)
+            sub_path = os.path.join(settings.ACTIVATION_MATRICES, sub, Mode.CLIPS.value)
             if net:
                 sub_path = os.path.join(sub_path, net.value)
             sub_data = self.load(sub_path)
             sub_data_clip = sub_data[sub_data['y'] == clip]
             sub_data_clip_tr = self.get_single_tr_seq(sub_data_clip, tr=-1)
             all_sub_last_tr_clip.append(sub_data_clip_tr)
-            sub_path = os.path.join(config.ACTIVATION_MATRICES, sub, Mode.REST_BETWEEN.value)
+            sub_path = os.path.join(settings.ACTIVATION_MATRICES, sub, Mode.REST_BETWEEN.value)
             if net:
                 sub_path = os.path.join(sub_path, net.value)
             sub_data = self.load(sub_path)
@@ -63,7 +63,7 @@ class CorrelationSequence:
 
     def generate_sequence_comparison(self, net: Network, table_name):
         correlation_by_tr = {}
-        for clip in config.idx_to_clip.values():
+        for clip in settings.idx_to_clip.values():
             if clip.startswith('test'):
                 continue
             subs_clip, subs_rest = self.get_subjects_average_single_tr(clip, net)
@@ -79,7 +79,7 @@ class CorrelationSequence:
 
         correlation_by_tr = pd.DataFrame(correlation_by_tr)
         correlation_by_tr.to_csv(
-            f"{config.CORRELATION_MATRIX_BY_TR}\\"
+            f"{settings.CORRELATION_MATRIX_BY_TR}\\"
             f"{table_name}.csv"
         )
         print(f"Saved {table_name}")

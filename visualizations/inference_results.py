@@ -12,7 +12,7 @@ import plotly.io as pio
 import plotly.express as px
 from plotly.subplots import make_subplots
 
-import config
+import settings
 
 pio.templates.default = 'plotly_white'
 from plot_utils import _hex_to_rgb, _plot_ts
@@ -60,7 +60,7 @@ args = ARGS()
 
 
 def _get_results(args, model, networks=None):
-    res_path = config.RESULTS_PATH if not networks else config.RESULTS_PATH_NETWORKS
+    res_path = settings.RESULTS_PATH if not networks else settings.RESULTS_PATH_NETWORKS
     load_path = os.path.join(res_path,model)
     with open(load_path, 'rb') as f:
         r = pickle.load(f)
@@ -175,7 +175,7 @@ def _compare_temporal(models, clip_names, mode='train_mode'):
 
 def _get_labels():
 
-    timing_file = pd.read_csv(os.path.join(config.FMRI_DATA,
+    timing_file = pd.read_csv(os.path.join(settings.FMRI_DATA,
                               f'videoclip_tr_lookup.csv'))
 
     clip_y = _get_clip_labels(timing_file)

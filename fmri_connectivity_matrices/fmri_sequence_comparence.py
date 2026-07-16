@@ -1,5 +1,5 @@
 import os
-import config
+import settings
 import pandas as pd
 
 from enums import Mode, Network
@@ -21,10 +21,10 @@ class ConnectivitySequence:
     @staticmethod
     def load(mode: Mode, net: Network = None):
         if net:
-            data = pd.read_pickle(os.path.join(config.FMRI_DATA_NETWORKS, mode.value,
+            data = pd.read_pickle(os.path.join(settings.FMRI_DATA_NETWORKS, mode.value,
                                                f"df{net.value}.pkl"))
         else:
-            data = pd.read_pickle(os.path.join(config.FMRI_DATA,
+            data = pd.read_pickle(os.path.join(settings.FMRI_DATA,
                                                f"4_runs_{mode.value}.pkl"))
         return data
 
@@ -45,7 +45,7 @@ class ConnectivitySequence:
         df_rest = self.load(Mode.REST_BETWEEN, net)
         all_sub_last_tr_clip = []
         all_sub_rest_trs = []
-        for subject in config.sub_test_list:
+        for subject in settings.sub_test_list:
             sub_data_clip = clip_sequence[clip_sequence['Subject'] == int(subject)]
 
             sub_data_clip_tr = self.get_single_tr_seq(sub_data_clip, tr=-1)
@@ -78,12 +78,12 @@ class ConnectivitySequence:
                     rest_clip_zscore)
 
                 correlation_by_tr.setdefault(
-                    config.connectivity_mapping[clip_i], []).append(round(
+                    settings.connectivity_mapping[clip_i], []).append(round(
                     rest_clip_corr.loc[0].at[1], 3))
 
         correlation_by_tr = pd.DataFrame(correlation_by_tr)
         correlation_by_tr.to_csv(
-            f"{config.CORRELATION_MATRIX_BY_TR}\\"
+            f"{settings.CORRELATION_MATRIX_BY_TR}\\"
             f"{file_name}.csv"
         )
         print(f"Saved {file_name}")

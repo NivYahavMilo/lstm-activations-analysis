@@ -1,6 +1,6 @@
 import os
 
-import config
+import settings
 
 import numpy as np
 import pandas as pd
@@ -14,9 +14,9 @@ from visualizations.plot_figure import plot_matrix
 
 def _load_csv(sub: str, mode: Mode, net: Network = None):
     if net:
-        path = os.path.join(config.ACTIVATION_MATRICES, sub, mode.value, net.value, 'activation_matrix.csv')
+        path = os.path.join(settings.ACTIVATION_MATRICES, sub, mode.value, net.value, 'activation_matrix.csv')
     else:
-        path = os.path.join(config.ACTIVATION_MATRICES, sub, mode.value, 'activation_matrix.csv')
+        path = os.path.join(settings.ACTIVATION_MATRICES, sub, mode.value, 'activation_matrix.csv')
 
     sub = pd.read_csv(path)
     return sub
@@ -60,9 +60,9 @@ def set_activation_vectors(corr: dict):
 
 
 def generate_correlation_per_clip(subject_list, mode: Mode):
-    mat_path = config.ACTIVATION_MATRICES
+    mat_path = settings.ACTIVATION_MATRICES
     all_cor_mat = []
-    for clip in config.idx_to_clip.values():
+    for clip in settings.idx_to_clip.values():
         for sub in subject_list:
             corr_mat = pd.read_csv(os.path.join(mat_path, sub, mode.value, 'activation_matrix.csv'))
             matrix = corr_mat[corr_mat['y'] == clip]
@@ -73,7 +73,7 @@ def generate_correlation_per_clip(subject_list, mode: Mode):
             (mat for mat in all_cor_mat))
         avg_mat = pd.DataFrame(avg_mat)
         avg_mat.to_csv(os.path.join(
-            config.CORRELATION_MATRIX,
+            settings.CORRELATION_MATRIX,
             f'avg_corr_mat{clip}_{mode.value}.csv'), index=False)
 
 
@@ -94,12 +94,12 @@ def main_pipeline(subjects_list, table_name, net: Network = None, re_test: bool 
         corr_mat = join_and_auto_correlate(df_clip, df_rest)
         corr_mat = rearrange_clips(corr_mat, where='rows', with_testretest=re_test)
         corr_mat = rearrange_clips(corr_mat, where='columns', with_testretest=re_test)
-        corr_mat.to_csv(os.path.join(config.ACTIVATION_MATRICES, sub, f'{table_name}.csv'))
+        corr_mat.to_csv(os.path.join(settings.ACTIVATION_MATRICES, sub, f'{table_name}.csv'))
         print('done', sub, 'saved to csv', net.name)
 
 
 def create_avg_activation_matrix(table_name: str):
-    mat_path = config.ACTIVATION_MATRICES
+    mat_path = settings.ACTIVATION_MATRICES
     all_cor_mat = []
     subjects = os.listdir(mat_path)
     for sub in subjects:
@@ -118,31 +118,31 @@ def create_avg_activation_matrix(table_name: str):
 
 
 def wb_pipeline():
-    # generate_correlation_per_clip(config.test_list, Mode.CLIPS)
-    # generate_correlation_per_clip(config.test_list, Mode.REST_BETWEEN)
+    # generate_correlation_per_clip(settings.test_list, Mode.CLIPS)
+    # generate_correlation_per_clip(settings.test_list, Mode.REST_BETWEEN)
 
     table = 'corr mat wb without test-re-test'
-    main_pipeline(config.sub_test_list, table, re_test=False)
+    main_pipeline(settings.sub_test_list, table, re_test=False)
     create_avg_activation_matrix(table)
 
-    clip_rest_corr = total_clip_and_rest_correlation(f"{config.ACTIVATION_MATRICES}\\avg {table}")
+    clip_rest_corr = total_clip_and_rest_correlation(f"{settings.ACTIVATION_MATRICES}\\avg {table}")
     clip_rest_corr.to_csv('rest-clip corr' + table + '.csv')
 
     table = 'corr mat wb with test-re-test'
-    main_pipeline(config.sub_test_list, table, re_test=True)
+    main_pipeline(settings.sub_test_list, table, re_test=True)
     create_avg_activation_matrix(table)
 
-    clip_rest_corr = total_clip_and_rest_correlation(f"{config.ACTIVATION_MATRICES}\\avg {table}")
+    clip_rest_corr = total_clip_and_rest_correlation(f"{settings.ACTIVATION_MATRICES}\\avg {table}")
     clip_rest_corr.to_csv('rest-clip corr' + table + '.csv')
 
 
 def net_pipeline():
     for net in Network:
         table = f'{net.value} corr mat without test-re-test'
-        main_pipeline(config.sub_test_list, table, net, re_test=False)
+        main_pipeline(settings.sub_test_list, table, net, re_test=False)
         create_avg_activation_matrix(table)
 
-        clip_rest_corr = total_clip_and_rest_correlation(f"{config.ACTIVATION_MATRICES}\\avg {table}")
+        clip_rest_corr = total_clip_and_rest_correlation(f"{settings.ACTIVATION_MATRICES}\\avg {table}")
         clip_rest_corr.to_csv('rest-clip corr' + table + '.csv')
 
 

@@ -2,13 +2,13 @@ import os
 
 from enums import Network,Mode
 import pandas as pd
-import config
+import settings
 from statistical_analysis.math_functions import z_score
 from statistical_analysis.matrices_ops import MatricesOperations
 
 
 def load_connectivity_matrix(mode, net):
-    path = os.path.join(config.CONNECTIVITY_FOLDER, net.value, mode.value)
+    path = os.path.join(settings.CONNECTIVITY_FOLDER, net.value, mode.value)
     for movie in os.listdir(path):
         data = pd.read_csv(os.path.join(path, movie), index_col=0)
         movie_name = f"{mode.value}{net.value}{movie[movie.rfind('_'):movie.find('.')]}"

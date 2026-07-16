@@ -1,24 +1,24 @@
-"""config.py path roots: repo-relative defaults + LSTM_DATA_DIR / LSTM_OUTPUT_DIR overrides."""
+"""settings.py path roots: repo-relative defaults + LSTM_DATA_DIR / LSTM_OUTPUT_DIR overrides."""
 import importlib
 import os
 
 import pytest
 
-import config as config_module
+import settings as settings_module
 
 ENV_VARS = ["LSTM_DATA_DIR", "LSTM_OUTPUT_DIR"]
 
 
 @pytest.fixture
 def reload_config():
-    """Reload config under the current environment; restore defaults afterwards."""
+    """Reload settings under the current environment; restore defaults afterwards."""
     def _reload():
-        return importlib.reload(config_module)
+        return importlib.reload(settings_module)
 
     yield _reload
     for key in ENV_VARS:
         os.environ.pop(key, None)
-    importlib.reload(config_module)
+    importlib.reload(settings_module)
 
 
 def test_defaults_are_repo_relative(reload_config, monkeypatch):

@@ -3,10 +3,10 @@ import os
 import pandas as pd
 import torch
 
-import config
+import settings
 from supporting_functions import _load_pkl
 from enums import Mode, Network
-from config import idx_to_clip
+from settings import idx_to_clip
 
 
 class TableBuilder:
@@ -40,7 +40,7 @@ class TableBuilder:
 
     @staticmethod
     def __create_subject_dir(subject: str, mode: Mode, network: str = ''):
-        subject_dir = os.path.join(config.ACTIVATION_MATRICES, subject)
+        subject_dir = os.path.join(settings.ACTIVATION_MATRICES, subject)
         # Open new directory as subjects id
         if not os.path.exists(subject_dir):
             os.makedirs(subject_dir)
@@ -59,7 +59,7 @@ class TableBuilder:
 
     @classmethod
     def subject_tables_forming_wb(cls, activation_path, mode: Mode):
-        subjects_mappings = _load_pkl(os.path.join(config.MAPPINGS_PATH,
+        subjects_mappings = _load_pkl(os.path.join(settings.MAPPINGS_PATH,
                                                    "subject_occurrence_mapping.pkl"))
         test_subjects = subjects_mappings.get("test")
         activations = _load_pkl(activation_path)
@@ -75,7 +75,7 @@ class TableBuilder:
 
     @classmethod
     def subject_tables_forming_networks(cls, activation_path, mode: Mode):
-        subjects_mappings = _load_pkl(os.path.join(config.MAPPINGS_PATH,
+        subjects_mappings = _load_pkl(os.path.join(settings.MAPPINGS_PATH,
                                                    "subject_occurrence_mapping.pkl"))
         test_subjects = subjects_mappings.get("test")
         for net in os.listdir(activation_path):
@@ -94,19 +94,19 @@ class TableBuilder:
 def networks_pipeline():
     table_builder = TableBuilder()
 
-    path = os.path.join(config.ACTIVATIONS_NETWORKS_PATH, Mode.CLIPS.value)
+    path = os.path.join(settings.ACTIVATIONS_NETWORKS_PATH, Mode.CLIPS.value)
     table_builder.subject_tables_forming_networks(activation_path=path, mode=Mode.CLIPS)
 
-    path = os.path.join(config.ACTIVATIONS_NETWORKS_PATH, Mode.REST_BETWEEN.value)
+    path = os.path.join(settings.ACTIVATIONS_NETWORKS_PATH, Mode.REST_BETWEEN.value)
     table_builder.subject_tables_forming_networks(activation_path=path, mode=Mode.REST_BETWEEN)
 
 def wb_pipeline():
     table_builder = TableBuilder()
 
-    path = f'{config.MODELS_PATH}\\{Mode.CLIPS.value}_model_activations.pkl'
+    path = f'{settings.MODELS_PATH}\\{Mode.CLIPS.value}_model_activations.pkl'
     table_builder.subject_tables_forming_wb(activation_path=path, mode=Mode.CLIPS)
 
-    path = f'{config.MODELS_PATH}\\{Mode.REST_BETWEEN.value}_model_activations.pkl'
+    path = f'{settings.MODELS_PATH}\\{Mode.REST_BETWEEN.value}_model_activations.pkl'
     table_builder.subject_tables_forming_wb(activation_path=path, mode=Mode.REST_BETWEEN)
 
 

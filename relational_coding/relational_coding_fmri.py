@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 
-import config
+import settings
 from enums import Network, Mode
 from mappings.re_arranging import rearrange_clips
 from relational_coding.relational_coding_base import RelationalCoding
@@ -16,12 +16,12 @@ class RelationalCodingfMRI(RelationalCoding):
 
     @staticmethod
     def _load_data(mode: Mode, network: Network):
-        net_path = os.path.join(config.FMRI_DATA_NETWORKS,
+        net_path = os.path.join(settings.FMRI_DATA_NETWORKS,
                                 mode.value,
                                 f'df{network.value}.pkl')
 
         if network == Network.WB:
-            net_path = os.path.join(config.FMRI_DATA,
+            net_path = os.path.join(settings.FMRI_DATA,
                                     f'4_runs_{mode.value}.pkl')
 
         data = pd.read_pickle(net_path)
@@ -45,13 +45,13 @@ class RelationalCodingfMRI(RelationalCoding):
     @classmethod
     def compare_clip_to_rest_single_tr(cls, movies, rest, rest_tr):
         avg_series_per_clip = {}
-        for clip_i, clip in config.connectivity_mapping.items():
+        for clip_i, clip in settings.connectivity_mapping.items():
             if clip_i == 0:
                 continue
 
             clip_vec = cls.avg_single_tr_vectors(
                 data=movies,
-                sub_list=config.sub_test_list,
+                sub_list=settings.sub_test_list,
                 tr_pos=-1,
                 clip_index=clip_i)
 
@@ -63,7 +63,7 @@ class RelationalCodingfMRI(RelationalCoding):
 
             rest_vec = cls.avg_single_tr_vectors(
                 data=rest,
-                sub_list=config.sub_test_list,
+                sub_list=settings.sub_test_list,
                 tr_pos=rest_tr,
                 clip_index=clip_i)
 

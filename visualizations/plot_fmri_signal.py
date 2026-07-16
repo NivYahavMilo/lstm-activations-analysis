@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 import pandas as pd
-import config
+import settings
 import matplotlib.pyplot as plt
 from statistical_analysis.matrices_ops import MatricesOperations
 
@@ -11,9 +11,9 @@ K_RUNS = 4
 
 def load_fmri_data(file, net=None):
     if net:
-        df = pd.read_pickle(os.path.join(config.FMRI_DATA, 'networks_df', f'{file}.pkl'))
+        df = pd.read_pickle(os.path.join(settings.FMRI_DATA, 'networks_df', f'{file}.pkl'))
     else:
-        df = pd.read_pickle(os.path.join(config.FMRI_DATA, f'{file}.pkl'))
+        df = pd.read_pickle(os.path.join(settings.FMRI_DATA, f'{file}.pkl'))
     return df
 
 
@@ -49,7 +49,7 @@ def avg_roi_seq(signals, clip_i):
             one_dimension_sig[signal] = roi_avg
     else:
         # average roi
-        signal = config.idx_to_clip.get(clip_i)
+        signal = settings.idx_to_clip.get(clip_i)
         roi_avg = MatricesOperations.get_avg_matrix(iter(signals), axis=1)
         one_dimension_sig[signal] = roi_avg
 
@@ -59,7 +59,7 @@ def avg_roi_seq(signals, clip_i):
 def iterate_subs(clip_i, mode):
     df_clips = load_fmri_data('4_movie_runs')
     subjects_signals = {}
-    for subject in config.sub_test_list:
+    for subject in settings.sub_test_list:
         subject = int(subject)
         seq_signals = filter_wanted_signal(df_clips, subject, clip_i)
 
@@ -74,7 +74,7 @@ def iterate_subs(clip_i, mode):
 
 def average_all_subjects(subjects_signals, clip_i,  test_retest: bool = False, concat_test_retest: bool = False):
     avg_seq = {}
-    clip = config.connectivity_mapping.get(clip_i)
+    clip = settings.connectivity_mapping.get(clip_i)
     if test_retest:
         all_subjects = {}
         for sub, seqs in subjects_signals.items():
@@ -132,15 +132,15 @@ def plot_signal(signal, clip):
 if __name__ == '__main__':
     inception = 5
     avg_signal = iterate_subs(clip_i=inception, mode=None)
-    clip_name = config.idx_to_clip.get(inception)
+    clip_name = settings.idx_to_clip.get(inception)
     plot_signal(avg_signal, clip_name)
 
     pockets = 3
     avg_signal = iterate_subs(clip_i=pockets, mode=None)
-    clip_name = config.idx_to_clip.get(pockets)
+    clip_name = settings.idx_to_clip.get(pockets)
     plot_signal(avg_signal, clip_name)
 
     testretest = 0
     avg_signal = iterate_subs(clip_i=testretest, mode=None)
-    clip_name = config.idx_to_clip.get(testretest)
+    clip_name = settings.idx_to_clip.get(testretest)
     plot_signal(avg_signal, clip_name)

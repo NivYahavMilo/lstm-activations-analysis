@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-import config
+import settings
 from mappings.re_arranging import rearrange_clips
 from statistical_analysis.correlation_pipelines import (set_activation_vectors,
                                                         auto_correlation_pipeline,
@@ -35,7 +35,7 @@ def get_window_tr_clip(mat_clip: pd.DataFrame, length: int = 19, window: str = '
 
 def auto_correlation_pipeline_custom_tr(subject: str, mode: Mode):
     corr_per_clip = {}
-    mat_path = os.path.join(config.ACTIVATION_MATRICES, subject, mode.value, 'activation_matrix.csv')
+    mat_path = os.path.join(settings.ACTIVATION_MATRICES, subject, mode.value, 'activation_matrix.csv')
     sub = _load_csv(mat_path)
     for clip in list(sub['y'].unique()):
         # Drop all columns unrelated to activation values
@@ -65,7 +65,7 @@ def avg_single_tr_vectors(sub_list, mode: Mode, clip):
     for sub in sub_list:
         # Execute clip pipeline
         sub_matrix = pd.read_csv(
-            os.path.join(config.ACTIVATION_MATRICES, sub, mode.value, 'activation_matrix.csv'))
+            os.path.join(settings.ACTIVATION_MATRICES, sub, mode.value, 'activation_matrix.csv'))
         activation_vec = get_single_tr(sub_matrix, clip)
         clip_per_subs.append(activation_vec)
     avg_series = MatricesOperations.get_avg_matrix((clip.values for clip in clip_per_subs))
@@ -74,9 +74,9 @@ def avg_single_tr_vectors(sub_list, mode: Mode, clip):
 
 def compare_cliptorest_single_tr():
     avg_series_per_clip = {}
-    for clip in config.idx_to_clip.values():
-        clip_vec = avg_single_tr_vectors(config.sub_test_list, Mode.CLIPS, clip)
-        rest_vec = avg_single_tr_vectors(config.sub_test_list, Mode.REST_BETWEEN, clip)
+    for clip in settings.idx_to_clip.values():
+        clip_vec = avg_single_tr_vectors(settings.sub_test_list, Mode.CLIPS, clip)
+        rest_vec = avg_single_tr_vectors(settings.sub_test_list, Mode.REST_BETWEEN, clip)
         avg_series_per_clip[clip + '_' + Mode.CLIPS.value] = clip_vec.tolist()[0]
         avg_series_per_clip[clip + '_' + Mode.REST_BETWEEN.value] = rest_vec.tolist()[0]
     return pd.DataFrame.from_dict(avg_series_per_clip)
@@ -93,7 +93,7 @@ def compare_cliptime_window_to_rest_between(sub_list):
         # Merging clips and rest between data frame
         corr_mat = join_and_auto_correlate(df_clip, df_rest)
         corr_mat.to_csv(
-            os.path.join(config.ACTIVATION_MATRICES, sub, f'corr_mat_first_19_tr.csv'))
+            os.path.join(settings.ACTIVATION_MATRICES, sub, f'corr_mat_first_19_tr.csv'))
         print('done', sub, 'saved to csv')
 
 

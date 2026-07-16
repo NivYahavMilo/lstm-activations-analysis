@@ -3,7 +3,7 @@ script for generating connectivity matrix out of 300 roi from fmri data
 """
 import pandas as pd
 
-import config
+import settings
 from enums import Mode
 from mappings.re_arranging import rearrange_clips
 from statistical_analysis.correlation_pipelines import set_activation_vectors, join_and_auto_correlate
@@ -15,12 +15,12 @@ class RoiConnectivity:
     def __init__(self):
         self.data = {Mode.CLIPS: self.__load_fmri_data('movie_runs'),
                      Mode.REST_BETWEEN: self.__load_fmri_data('runs_rest_between')}
-        self.test_subjects = config.sub_test_list.astype(int)
-        self.clips = config.connectivity_mapping.keys()
+        self.test_subjects = settings.sub_test_list.astype(int)
+        self.clips = settings.connectivity_mapping.keys()
 
     @staticmethod
     def __load_fmri_data(filename):
-        return pd.read_pickle(f"{config.FMRI_DATA}//4_{filename}.pkl")
+        return pd.read_pickle(f"{settings.FMRI_DATA}//4_{filename}.pkl")
 
     def auto_corr(self, sub, mode:Mode):
         corr_per_clip = {}
@@ -34,7 +34,7 @@ class RoiConnectivity:
             # Calculate Pearson correlation
             pearson_corr = MatricesOperations.correlation_matrix(
                 matrix=mat_zscore)
-            clip_name = config.connectivity_mapping.get(clip)
+            clip_name = settings.connectivity_mapping.get(clip)
             corr_per_clip[f"{clip_name}_{mode.value}"] = pearson_corr
         return corr_per_clip
 

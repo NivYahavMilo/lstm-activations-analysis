@@ -1,5 +1,5 @@
 import os
-import config
+import settings
 import matplotlib.pyplot as plt
 
 import pandas as pd
@@ -8,7 +8,7 @@ import pandas as pd
 
 def plot_rest_clip_correlation_bar():
     res = {}
-    res_path = config.RESULTS_PATH_NETWORKS
+    res_path = settings.RESULTS_PATH_NETWORKS
     for net in os.listdir(res_path):
         rest_clip_corr = pd.read_csv(os.path.join(res_path, net))
         net_name = net.split()[1].replace('corr','')

@@ -2,6 +2,15 @@ import os
 
 import pandas as pd
 
+# Load a local .env (if present) before reading any LSTM_* overrides below.
+# python-dotenv is optional: without it, plain environment variables still work.
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv()
+except ImportError:
+    pass
+
 ROOT_PATH = os.path.abspath(os.path.curdir)
 
 # Data and outputs live under the repo by default. Override either root with an environment

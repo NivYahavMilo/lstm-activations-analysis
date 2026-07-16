@@ -4,7 +4,7 @@ import pickle
 import os
 import time
 
-import config
+import settings
 from enums import Mode
 from model_training.hyperparameters import HyperParams
 from supporting_functions import _dict_to_pkl
@@ -131,22 +131,22 @@ def _test(df, args):
 
 
 def run_net(args):
-    nets_path = os.path.join(config.FMRI_DATA_NETWORKS, args.mode)
+    nets_path = os.path.join(settings.FMRI_DATA_NETWORKS, args.mode)
     networks = os.listdir(nets_path)
     for net in networks:
         args.net = net.replace('df', '').replace('.pkl', '')
         res_path = f'results {args.net} {args.mode}.pkl'
         print(f"start training {args.net} in {args.mode} mode")
-        df = pd.read_pickle(os.path.join(config.FMRI_DATA_NETWORKS,
+        df = pd.read_pickle(os.path.join(settings.FMRI_DATA_NETWORKS,
                                          args.mode, net))
         results = {'test_mode': _test(df, args)}
         with open(res_path, 'wb') as f:
             pickle.dump(results, f)
 
 def run(args):
-    df = pd.read_pickle(os.path.join(config.FMRI_DATA,
+    df = pd.read_pickle(os.path.join(settings.FMRI_DATA,
                                      f"4_runs_{args.mode.value}.pkl"))
-    res_path = os.path.join(config.RESULTS_PATH, f'300 roi {args.mode.value} 0-10 tr results')
+    res_path = os.path.join(settings.RESULTS_PATH, f'300 roi {args.mode.value} 0-10 tr results')
     results = {'test_mode': _test(df, args)}
     with open(f'{res_path}.pkl', 'wb') as f:
         pickle.dump(results, f)

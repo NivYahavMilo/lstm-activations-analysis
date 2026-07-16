@@ -5,3 +5,4 @@ pandas~=1.4.3
 scipy
 matplotlib~=3.5.2
 nibabel~=4.0.2
+python-dotenv~=0.21

@@ -1,5 +1,5 @@
 import os
-import config
+import settings
 from supporting_functions import _load_pkl
 import pandas as pd
 import torch
@@ -8,7 +8,7 @@ from enums import Mode
 def attach_activations_to_its_subject(activation:dict, layer: str, subjects_list: list):
     acts: torch.Tensor = activation.get(f"{layer}_activations")
     num_of_occurrences = acts.shape[0]
-    occurrences_per_subject = num_of_occurrences // config.TEST_SUBJECTS_AMOUNT  # 14 clips, 4 testretest
+    occurrences_per_subject = num_of_occurrences // settings.TEST_SUBJECTS_AMOUNT  # 14 clips, 4 testretest
 
     start=0
     for sub in range(0, num_of_occurrences, occurrences_per_subject):
@@ -25,6 +25,6 @@ def attach_activations_to_its_subject(activation:dict, layer: str, subjects_list
 
 
 if __name__ == '__main__':
-    activations_: dict = _load_pkl(os.path.join(config.MODELS_PATH, 'clips_model_activations.pkl'))
-    subject_lst = pd.read_pickle(os.path.join(config.FMRI_DATA, '4_movie_runs.pkl'))['Subject'].unique()[100:].tolist()
+    activations_: dict = _load_pkl(os.path.join(settings.MODELS_PATH, 'clips_model_activations.pkl'))
+    subject_lst = pd.read_pickle(os.path.join(settings.FMRI_DATA, '4_movie_runs.pkl'))['Subject'].unique()[100:].tolist()
     attach_activations_to_its_subject(activations_, 'lstm', subject_lst)
