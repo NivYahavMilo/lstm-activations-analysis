@@ -4,7 +4,7 @@ from typing import Dict, List
 
 import numpy as np
 
-import config
+import settings
 import enums
 import pandas as pd
 
@@ -23,7 +23,7 @@ class Connectivity:
         self.clips = list(self.net_df['y'].unique())
 
     def _load_net(self):
-        net = pd.read_pickle(os.path.join(config.FMRI_DATA_NETWORKS,
+        net = pd.read_pickle(os.path.join(settings.FMRI_DATA_NETWORKS,
                                           self.mode.value,
                                           ''.join(['df', self.net.value, '.pkl'])))
         return net
@@ -51,16 +51,16 @@ class Connectivity:
 
             avg_mat: np.array = MatricesOperations.get_avg_matrix(
                 (mat for mat in all_cor_mat))
-            clip_name = config.connectivity_mapping[clip]
+            clip_name = settings.connectivity_mapping[clip]
             pd.DataFrame(avg_mat).to_csv(os.path.join(
-                config.CONNECTIVITY_FOLDER, self.net.value, self.mode.value, f"connectivity_matrix_{clip_name}.csv"))
+                settings.CONNECTIVITY_FOLDER, self.net.value, self.mode.value, f"connectivity_matrix_{clip_name}.csv"))
             print(f"Saved {clip_name} clip for {self.net.name} in mode {self.mode.name} to csv")
 
     @classmethod
     def generate_connectivity_matrices(cls):
         for mode in enums.Mode:
             for net in enums.Network:
-                path = os.path.join(config.CONNECTIVITY_FOLDER, net.value, mode.value)
+                path = os.path.join(settings.CONNECTIVITY_FOLDER, net.value, mode.value)
                 if not os.path.exists(path):
                     os.makedirs(path)
                 connectivity = cls(mode=mode, net=net)

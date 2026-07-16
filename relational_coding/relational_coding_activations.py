@@ -2,7 +2,7 @@ import os
 
 import pandas as pd
 
-import config
+import settings
 from enums import Mode, Network
 from mappings.re_arranging import rearrange_clips
 from relational_coding.relational_coding_base import RelationalCoding
@@ -23,10 +23,10 @@ class RelationalCodingActivations(RelationalCoding):
         clip_per_subs = []
         for sub in sub_list:
             if net == Network.WB:
-                sub_matrix = pd.read_csv(os.path.join(config.ACTIVATION_MATRICES,
+                sub_matrix = pd.read_csv(os.path.join(settings.ACTIVATION_MATRICES,
                                                       sub, mode.value, 'activation_matrix.csv'))
             else:
-                sub_matrix = pd.read_csv(os.path.join(config.ACTIVATION_MATRICES,
+                sub_matrix = pd.read_csv(os.path.join(settings.ACTIVATION_MATRICES,
                                                       sub, mode.value,
                                                       net.value,
                                                       'activation_matrix.csv'))
@@ -40,11 +40,11 @@ class RelationalCodingActivations(RelationalCoding):
     @classmethod
     def compare_single_tr(cls, net, rest_tr):
         avg_series_per_clip = {}
-        for clip_i, clip_name in config.idx_to_clip.items():
+        for clip_i, clip_name in settings.idx_to_clip.items():
             if clip_name.startswith('test'):
                 continue
-            clip_vec = cls.avg_single_tr_vectors(net, config.sub_test_list, Mode.CLIPS, clip_name)
-            rest_vec = cls.avg_single_tr_vectors(net, config.sub_test_list, Mode.REST_BETWEEN, clip_name, rest_tr)
+            clip_vec = cls.avg_single_tr_vectors(net, settings.sub_test_list, Mode.CLIPS, clip_name)
+            rest_vec = cls.avg_single_tr_vectors(net, settings.sub_test_list, Mode.REST_BETWEEN, clip_name, rest_tr)
             avg_series_per_clip[clip_name + '_' + Mode.CLIPS.value] = clip_vec.tolist()[0]
             avg_series_per_clip[clip_name + '_' + Mode.REST_BETWEEN.value] = rest_vec.tolist()[0]
         return pd.DataFrame.from_dict(avg_series_per_clip)

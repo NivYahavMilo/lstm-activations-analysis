@@ -4,7 +4,7 @@ import pandas as pd
 from matplotlib import colors
 from matplotlib import pyplot as plt
 
-import config
+import settings
 from enums import Network
 from statistical_analysis.matrices_ops import MatricesOperations
 from supporting_functions import _load_pkl
@@ -59,7 +59,7 @@ def plot_signals_on_top(data, title):
     fig1 = plt.gcf()
     plt.show()
     plt.draw()
-    fig1.savefig(fr"{config.FIGURES_PATH}\\{title}.png", dpi=100)
+    fig1.savefig(fr"{settings.FIGURES_PATH}\\{title}.png", dpi=100)
 
 
 def _subplot(table_path, title):
@@ -68,12 +68,12 @@ def _subplot(table_path, title):
 
 
 def _plot_wb():
-    table_path = f'{config.CORRELATION_MATRIX_BY_TR}\\' \
+    table_path = f'{settings.CORRELATION_MATRIX_BY_TR}\\' \
                  f'fmri last tr clip correlation with rest between without test-re-test.csv'
 
     _subplot(table_path, "fMRI Last tr clip Correlation with Resting state")
 
-    table_path = f'{config.CORRELATION_MATRIX_BY_TR}\\' \
+    table_path = f'{settings.CORRELATION_MATRIX_BY_TR}\\' \
                  f'last tr clip correlation with rest between without test-re-test.csv'
     title = "LSTM patterns similarity last tr clip with rest between"
     _subplot(table_path, title)
@@ -84,14 +84,14 @@ def _plot_networks(data_type):
         table_name = f"{data_type} {net.value}" \
                      f" last tr clip correlation with rest between without test-re-test"
         tables_path = os.path.join(
-            config.CORRELATION_MATRIX_BY_TR,
+            settings.CORRELATION_MATRIX_BY_TR,
             f"{table_name}.csv")
         _subplot(tables_path, table_name)
 
 
 def _plot_combined_avg_wb_and_networks(data_type):
     combined_dict = {}
-    wb_path = f'{config.CORRELATION_MATRIX_BY_TR}\\' \
+    wb_path = f'{settings.CORRELATION_MATRIX_BY_TR}\\' \
               f'{data_type} WB last tr clip correlation with rest between without test-re-test.csv'
     wb_df = pd.read_csv(wb_path, index_col=0)
     for ii, movie in wb_df.iterrows():
@@ -102,7 +102,7 @@ def _plot_combined_avg_wb_and_networks(data_type):
         table_name = f"{data_type} {net.value}" \
                      f" last tr clip correlation with rest between without test-re-test"
         net_path = os.path.join(
-            config.CORRELATION_MATRIX_BY_TR,
+            settings.CORRELATION_MATRIX_BY_TR,
             f"{table_name}.csv")
 
         net_df = pd.read_csv(net_path, index_col=0)

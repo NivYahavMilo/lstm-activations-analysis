@@ -7,7 +7,7 @@ import numpy as np
 import torch
 from sklearn.metrics import confusion_matrix
 
-import config
+import settings
 from supporting_functions import _dict_to_pkl
 from model_training.torch_utils import _to_cpu
 
@@ -100,7 +100,7 @@ def _lstm_test_acc(model, X, y, X_len, max_length,
     if save_activations:
         # save predicted activations
         _dict_to_pkl(model.hidden_activations,
-                     os.path.join(config.MODELS_NETWORKS_PATH,
+                     os.path.join(settings.MODELS_NETWORKS_PATH,
                                   f'{args.net} {args.mode} 10-20 activations'))
 
     # logits to labels

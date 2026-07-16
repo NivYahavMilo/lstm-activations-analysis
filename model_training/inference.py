@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-import config
+import settings
 from enums import Mode
 from model_training.cc_utils import _lstm_test_acc, _test_time_window
 from model_training.dataloader import _get_clip_seq
@@ -13,17 +13,17 @@ from model_training.hyperparameters import HyperParams
 
 
 def _test(model_mode: Mode, inference: Mode, tr_range: tuple = ()):
-    test_subs = config.sub_test_list
+    test_subs = settings.sub_test_list
     test_len = len(test_subs)
 
     args = HyperParams()
-    model = torch.load(os.path.join(config.MODELS_PATH,
+    model = torch.load(os.path.join(settings.MODELS_PATH,
                                     f'{model_mode.value}_model.pt'))
     args.device = torch.device('cpu')
     model.to(args.device)
     model.eval()
 
-    clip_df = pd.read_pickle(os.path.join(config.FMRI_DATA,
+    clip_df = pd.read_pickle(os.path.join(settings.FMRI_DATA,
                                           f'4_runs_{inference.value}.pkl'))
     if tr_range:
         start_tr, end_tr = tr_range
@@ -70,7 +70,7 @@ def _test(model_mode: Mode, inference: Mode, tr_range: tuple = ()):
 def _save(results: dict, path: str):
     results_ = {"test_mode":  results}
 
-    with open(os.path.join(config.RESULTS_PATH,
+    with open(os.path.join(settings.RESULTS_PATH,
                            f'{path}.pkl'),
               'wb') as f:
         pickle.dump(results_, f)

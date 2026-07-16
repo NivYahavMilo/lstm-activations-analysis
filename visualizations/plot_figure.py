@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-import config
+import settings
 from enums import Network, DataType
 from supporting_functions import _load_pkl
 
@@ -14,7 +14,7 @@ def save_matrix_as_image():
     MEDIUM_SIZE = 10
     BIGGER_SIZE = 12
     mat_path = os.path.join(
-        config.DATA_PATH, 'activations_matrices', 'avrage_accross_all_subjects')
+        settings.DATA_PATH, 'activations_matrices', 'avrage_accross_all_subjects')
     for array in os.listdir(f'{mat_path}\\csvis'):
         if not array.isdigit():
             continue

@@ -10,7 +10,7 @@ from torch.nn.utils.rnn import pad_sequence
 from model_training.cc_utils import _get_clip_labels
 from model_training.fmri_utils import _get_parcel
 
-import config
+import settings
 from enums import Mode
 
 K_RUNS = 4
@@ -92,7 +92,7 @@ def _clip_class_df(args):
         args.r_roi = 0
         args.r_seed = 0
 
-    load_path = (os.path.join(config.FMRI_DATA,
+    load_path = (os.path.join(settings.FMRI_DATA,
                               'data_MOVIE_runs_roi_300_net_7_ts.pkl'))
 
     with open(load_path, 'rb') as f:
@@ -103,7 +103,7 @@ def _clip_class_df(args):
                     Mode.REST_BETWEEN: 'restclip_tr_lookup',
                     Mode.COMBINED: 'combined_clip_tr_lookup'}
 
-    timing_file = pd.read_csv(os.path.join(config.FMRI_DATA,
+    timing_file = pd.read_csv(os.path.join(settings.FMRI_DATA,
                               f'{mode_mapping.get(args.mode)}.csv'))
 
     # pick either all ROIs or subnetworks
