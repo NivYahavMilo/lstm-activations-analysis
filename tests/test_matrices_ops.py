@@ -53,8 +53,15 @@ def test_drop_symmetric_keeps_diagonal_when_requested():
     assert out.tolist() == [1.0, 2.0, 4.0, 3.0, 5.0, 6.0]
 
 
-def test_drop_symmetric_on_nonsymmetric_raises():
+def test_drop_symmetric_on_nonsymmetric_raises_value_error():
     m = pd.DataFrame(np.array([[1.0, 2.0], [3.0, 4.0]]))
-    # BUG (pinned): `raise(ValueError, msg)` raises a tuple -> TypeError, not ValueError.
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         MO.drop_symmetric_side_of_a_matrix(m)
+
+
+def test_drop_symmetric_does_not_mutate_input():
+    m = pd.DataFrame(np.array([[1.0, 2, 3], [2, 4, 5], [3, 5, 6]]))
+    before = m.to_numpy().copy()
+    MO.drop_symmetric_side_of_a_matrix(m, drop_diagonal=True)
+    # the diagonal must be untouched (previous implementation wrote NaNs into it)
+    assert np.array_equal(m.to_numpy(), before)
