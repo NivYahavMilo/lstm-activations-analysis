@@ -70,4 +70,16 @@ def config_data():
     return sub_train_list_, sub_test_list_
 
 
-sub_train_list, sub_test_list = config_data()
+# The train/test subject split is derived from a data pickle. Compute it lazily on
+# first access (PEP 562) so that importing `config` does not require the data file to
+# be present — importing the module stays side-effect free.
+_subject_split = None
+
+
+def __getattr__(name):
+    global _subject_split
+    if name in ('sub_train_list', 'sub_test_list'):
+        if _subject_split is None:
+            _subject_split = config_data()
+        return _subject_split[0] if name == 'sub_train_list' else _subject_split[1]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

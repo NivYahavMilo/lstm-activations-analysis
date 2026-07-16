@@ -4,3 +4,10 @@
 *.png
 /activation_matrices
 /.idea
+.idea/
+.vscode/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
