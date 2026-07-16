@@ -9,7 +9,7 @@ from statistical_analysis.matrices_ops import MatricesOperations
 from statistical_analysis.math_functions import z_score
 from mappings.re_arranging import rearrange_clips
 from enums import Mode, Network
-from visualiztions.plot_figure import plot_matrix
+from visualizations.plot_figure import plot_matrix
 
 
 def _load_csv(sub: str, mode: Mode, net: Network = None):
@@ -79,17 +79,7 @@ def generate_correlation_per_clip(subject_list, mode: Mode):
 
 def total_clip_and_rest_correlation(table_name: str):
     df = pd.read_csv(f'{table_name}.csv', index_col=0)
-
-    rest_cor = df.iloc[len(df) // 2:, len(df) // 2:]
-    clip_cor = df.iloc[:len(df) // 2, :len(df) // 2]
-    df = pd.DataFrame()
-    df_rest = MatricesOperations.drop_symmetric_side_of_a_matrix(rest_cor)
-    df_clip = MatricesOperations.drop_symmetric_side_of_a_matrix(clip_cor)
-    df['clip'] = df_clip
-    df['rest'] = df_rest
-
-    df_corr = df.corr()
-    return df_corr
+    return MatricesOperations.clip_rest_correlation(df)
 
 
 def main_pipeline(subjects_list, table_name, net: Network = None, re_test: bool = False):

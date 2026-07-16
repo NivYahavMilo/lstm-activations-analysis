@@ -26,15 +26,7 @@ class RelationalCoding:
 
     @classmethod
     def relational_distance(cls, df):
-        rest_cor = df.iloc[len(df) // 2:, len(df) // 2:]
-        clip_cor = df.iloc[:len(df) // 2, :len(df) // 2]
-        df = pd.DataFrame()
-        df_rest = MatricesOperations.drop_symmetric_side_of_a_matrix(rest_cor)
-        df_clip = MatricesOperations.drop_symmetric_side_of_a_matrix(clip_cor)
-        df['clip'] = df_clip
-        df['rest'] = df_rest
-
-        df_corr = df.corr()
+        df_corr = MatricesOperations.clip_rest_correlation(df)
         distance = round(df_corr.loc['clip'].at['rest'], 3)
         return distance
 

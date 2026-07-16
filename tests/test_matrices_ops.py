@@ -53,6 +53,18 @@ def test_drop_symmetric_keeps_diagonal_when_requested():
     assert out.tolist() == [1.0, 2.0, 4.0, 3.0, 5.0, 6.0]
 
 
+def test_clip_rest_correlation_of_correlated_halves():
+    clip = np.array([[1, 1, 2], [1, 1, 3], [2, 3, 1]], float)
+    rest = np.array([[1, 2, 4], [2, 1, 6], [4, 6, 1]], float)
+    full = np.zeros((6, 6))
+    full[:3, :3] = clip
+    full[3:, 3:] = rest
+    out = MO.clip_rest_correlation(pd.DataFrame(full))
+    assert list(out.columns) == ["clip", "rest"]
+    # clip half strictly-lower [1,2,3] vs rest half [2,4,6] -> perfectly correlated
+    assert np.isclose(out.loc["clip", "rest"], 1.0)
+
+
 def test_drop_symmetric_on_nonsymmetric_raises_value_error():
     m = pd.DataFrame(np.array([[1.0, 2.0], [3.0, 4.0]]))
     with pytest.raises(ValueError):

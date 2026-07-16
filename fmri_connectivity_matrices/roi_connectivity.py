@@ -9,7 +9,7 @@ from mappings.re_arranging import rearrange_clips
 from statistical_analysis.correlation_pipelines import set_activation_vectors, join_and_auto_correlate
 from statistical_analysis.math_functions import z_score
 from statistical_analysis.matrices_ops import MatricesOperations
-from visualiztions.plot_figure import plot_matrix
+from visualizations.plot_figure import plot_matrix
 
 class RoiConnectivity:
     def __init__(self):

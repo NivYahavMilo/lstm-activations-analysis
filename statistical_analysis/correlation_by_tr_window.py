@@ -11,7 +11,7 @@ from statistical_analysis.math_functions import z_score
 from statistical_analysis.matrices_ops import MatricesOperations
 from statistical_analysis.table_builder import Mode
 from supporting_functions import _load_csv
-from visualiztions.plot_figure import plot_matrix
+from visualizations.plot_figure import plot_matrix
 
 
 def get_window_tr_clip(mat_clip: pd.DataFrame, length: int = 19, window: str = 'last', tr_range: tuple = ()):

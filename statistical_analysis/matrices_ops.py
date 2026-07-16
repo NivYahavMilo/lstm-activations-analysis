@@ -56,5 +56,22 @@ class MatricesOperations:
     def get_avg_vector(cls, vec: pd.Series):
         return vec.mean()
 
+    @classmethod
+    def clip_rest_correlation(cls, corr_matrix: pd.DataFrame):
+        """Correlate the clip vs. rest halves of a stacked correlation matrix.
+
+        The top-left quadrant is the clip-vs-clip correlation block and the bottom-right
+        quadrant is the rest-vs-rest block. Each is flattened (symmetric side dropped) into a
+        vector; the returned 2x2 frame is the correlation between the ``clip`` and ``rest``
+        vectors.
+        """
+        half = len(corr_matrix) // 2
+        clip_cor = corr_matrix.iloc[:half, :half]
+        rest_cor = corr_matrix.iloc[half:, half:]
+        flat = pd.DataFrame()
+        flat['clip'] = cls.drop_symmetric_side_of_a_matrix(clip_cor)
+        flat['rest'] = cls.drop_symmetric_side_of_a_matrix(rest_cor)
+        return flat.corr()
+
 
 
