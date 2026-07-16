@@ -3,23 +3,32 @@ import os
 import pandas as pd
 
 ROOT_PATH = os.path.abspath(os.path.curdir)
-MODELS_PATH = os.path.join(ROOT_PATH, 'saved_models')
-MODELS_NETWORKS_PATH = os.path.join(ROOT_PATH, 'saved_models', 'networks', 'models')
-ACTIVATIONS_NETWORKS_PATH = os.path.join(ROOT_PATH, 'saved_models', 'networks', 'activations')
-ACTIVATION_MATRICES = os.path.join(ROOT_PATH, 'activation_matrices')
-AVG_ACTIVATION_MATRICES = os.path.join(ROOT_PATH, 'activation_matrices', 'Avg subjects')
-FMRI_DATA = os.path.join(ROOT_PATH, 'fmri_data')
-FMRI_DATA_NETWORKS = os.path.join(ROOT_PATH, 'fmri_data', 'networks_df')
-CONNECTIVITY_FOLDER = os.path.join(ROOT_PATH, 'fmri_connectivity_matrices')
-MAPPINGS_PATH = os.path.join(ROOT_PATH, 'mappings')
-CORRELATION_MATRIX = os.path.join(ROOT_PATH, 'Correlation Matrix')
-CORRELATION_MATRIX_BY_TR = os.path.join(ROOT_PATH, 'Correlation Matrix', 'Correlation by tr')
-CORRELATION_MATRIX_REST_CLIP = os.path.join(ROOT_PATH, 'Correlation Matrix',
+
+# Data and outputs live under the repo by default. Override either root with an environment
+# variable to point at an external drive without editing this file.
+DATA_ROOT = os.environ.get('LSTM_DATA_DIR', ROOT_PATH)
+OUTPUT_ROOT = os.environ.get('LSTM_OUTPUT_DIR', ROOT_PATH)
+
+# Outputs: trained models, activation matrices, correlation/connectivity results, figures
+MODELS_PATH = os.path.join(OUTPUT_ROOT, 'saved_models')
+MODELS_NETWORKS_PATH = os.path.join(OUTPUT_ROOT, 'saved_models', 'networks', 'models')
+ACTIVATIONS_NETWORKS_PATH = os.path.join(OUTPUT_ROOT, 'saved_models', 'networks', 'activations')
+ACTIVATION_MATRICES = os.path.join(OUTPUT_ROOT, 'activation_matrices')
+AVG_ACTIVATION_MATRICES = os.path.join(OUTPUT_ROOT, 'activation_matrices', 'Avg subjects')
+CONNECTIVITY_FOLDER = os.path.join(OUTPUT_ROOT, 'fmri_connectivity_matrices')
+CORRELATION_MATRIX = os.path.join(OUTPUT_ROOT, 'Correlation Matrix')
+CORRELATION_MATRIX_BY_TR = os.path.join(OUTPUT_ROOT, 'Correlation Matrix', 'Correlation by tr')
+CORRELATION_MATRIX_REST_CLIP = os.path.join(OUTPUT_ROOT, 'Correlation Matrix',
                                             'Rest-clips correlation')
-RESULTS_PATH = os.path.join(ROOT_PATH, 'results')
-RESULTS_PATH_NETWORKS = os.path.join(ROOT_PATH, 'results', 'networks')
-FIGURES_PATH = os.path.join(ROOT_PATH, 'figures')
-PARCEL_DIR = os.path.join(ROOT_PATH, 'fmri_data', 'cifti')
+RESULTS_PATH = os.path.join(OUTPUT_ROOT, 'results')
+RESULTS_PATH_NETWORKS = os.path.join(OUTPUT_ROOT, 'results', 'networks')
+FIGURES_PATH = os.path.join(OUTPUT_ROOT, 'figures')
+
+# Inputs: preprocessed fMRI data, parcellation files, subject mappings
+FMRI_DATA = os.path.join(DATA_ROOT, 'fmri_data')
+FMRI_DATA_NETWORKS = os.path.join(DATA_ROOT, 'fmri_data', 'networks_df')
+PARCEL_DIR = os.path.join(DATA_ROOT, 'fmri_data', 'cifti')
+MAPPINGS_PATH = os.path.join(DATA_ROOT, 'mappings')
 
 TEST_SUBJECTS_AMOUNT = 76
 TRAIN_SUBJECTS_AMOUNT = 100
